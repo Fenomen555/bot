@@ -111,7 +111,7 @@
     function updateCountdown() {
       const now = new Date();
       const future = new Date(now.getTime() + 2 * 60 * 1000); // Adicionar 2 minutos
-      document.getElementById("countdown").textContent = `Entrar até ${formatTime(future)} 🔥`;
+      document.getElementById("countdown").textContent = `Sign in until ${formatTime(future)} 🔥`;
       
       if (isPredicting) {
         document.getElementById("countdown").style.display = "block";
