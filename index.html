@@ -66,7 +66,6 @@
 <script>
   var signalButton = document.getElementById('signalButton');
   var signalDisplay = document.getElementById('signalDisplay');
-  var progressBar = document.getElementById('progressBar');
   var timerContainer = document.getElementById('timerContainer');
   var timerDisplay = document.getElementById('timer');
 
@@ -82,16 +81,14 @@
     signalDisplay.textContent = randomMultiplier;
 
     signalButton.disabled = true;
-    progressBar.style.width = '100%';
-    timerContainer.style.display = 'block'; // Показываем контейнер с таймером
+    timerContainer.style.display = 'block'; // Show the timer container
     var secondsLeft = 60;
     var countdown = setInterval(function() {
       secondsLeft--;
       timerDisplay.textContent = secondsLeft;
       if (secondsLeft <= 0) {
         clearInterval(countdown);
-        timerContainer.style.display = 'none'; // Скрываем контейнер с таймером
-        progressBar.style.width = '0%';
+        timerContainer.style.display = 'none'; // Hide the timer container
         signalButton.disabled = false;
         signalDisplay.textContent = 'GET SIGNAL';
       }
