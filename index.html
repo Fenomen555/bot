@@ -31,11 +31,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: auto; /* Размещаем кнопки внизу */
     }
     .btn-signal, .btn-help {
       width: 200px;
       margin: 10px 0;
       font-size: 1.5em;
+      position: relative; /* Необходимо для позиционирования полосы прогресса */
+      overflow: hidden;
     }
     .btn-help {
       margin-top: 30px;
@@ -43,7 +46,7 @@
     .progress-bar {
       height: 100%;
       background-color: red;
-      width: 0%;
+      width: 0%; /* Начальная ширина полосы */
       position: absolute;
       top: 0;
       left: 0;
