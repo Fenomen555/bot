@@ -50,42 +50,53 @@
   </style>
 </head>
 <body>
-  <div class="content-area">
-    <div id="signalDisplay" class="signal-display">GET SIGNAL</div>
-    <button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">GET SIGNAL</button>
-<div id="loaderContainer" class="loader-container">
-  <div id="loaderBar" class="loader-bar"></div>
-</div>
-    <button class="btn btn-outline-light btn-lg btn-signal">GAME HERE</button>
-    <button class="btn btn-info btn-lg btn-help">HELP</button>
+ <div class="content-area">
+  <div id="signalDisplay" class="signal-display">GET SIGNAL</div>
+  <button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">GET SIGNAL</button>
+  <div id="timerContainer" style="display: none;">
+    <div id="timer">60</div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.7.0/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script>
-    var signalButton = document.getElementById('signalButton');
-    var signalDisplay = document.getElementById('signalDisplay');
-    var progressBar = document.getElementById('progressBar');
+  <div id="loaderContainer" class="loader-container">
+    <div id="loaderBar" class="loader-bar"></div>
+  </div>
+  <button class="btn btn-outline-light btn-lg btn-signal">GAME HERE</button>
+  <button class="btn btn-info btn-lg btn-help">HELP</button>
+</div>
 
-    function getSignal() {
-      var randomMultiplier;
-      // 60% chance to get a signal between 1 and 5.76
-      if (Math.random() < 0.6) {
-        randomMultiplier = (Math.random() * (5.76 - 1) + 1).toFixed(2) + 'x';
-      } else {
-        // 40% chance to get a signal between 5.77 and 10
-        randomMultiplier = (Math.random() * (10 - 5.77) + 5.77).toFixed(2) + 'x';
-      }
-      signalDisplay.textContent = randomMultiplier;
+<script>
+  var signalButton = document.getElementById('signalButton');
+  var signalDisplay = document.getElementById('signalDisplay');
+  var progressBar = document.getElementById('progressBar');
+  var timerContainer = document.getElementById('timerContainer');
+  var timerDisplay = document.getElementById('timer');
 
-      signalButton.disabled = true;
-      progressBar.style.width = '100%';
-      setTimeout(function(){
+  function getSignal() {
+    var randomMultiplier;
+    // 60% chance to get a signal between 1 and 5.76
+    if (Math.random() < 0.6) {
+      randomMultiplier = (Math.random() * (5.76 - 1) + 1).toFixed(2) + 'x';
+    } else {
+      // 40% chance to get a signal between 5.77 and 10
+      randomMultiplier = (Math.random() * (10 - 5.77) + 5.77).toFixed(2) + 'x';
+    }
+    signalDisplay.textContent = randomMultiplier;
+
+    signalButton.disabled = true;
+    progressBar.style.width = '100%';
+    timerContainer.style.display = 'block'; // Показываем контейнер с таймером
+    var secondsLeft = 60;
+    var countdown = setInterval(function() {
+      secondsLeft--;
+      timerDisplay.textContent = secondsLeft;
+      if (secondsLeft <= 0) {
+        clearInterval(countdown);
+        timerContainer.style.display = 'none'; // Скрываем контейнер с таймером
         progressBar.style.width = '0%';
         signalButton.disabled = false;
         signalDisplay.textContent = 'GET SIGNAL';
-      }, 60000);
-    }
-  </script>
+      }
+    }, 1000);
+  }
+</script>
 </body>
 </html>
