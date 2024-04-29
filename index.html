@@ -7,17 +7,17 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .content-area {
-  background-image: url('177.gif');
-  background-size: cover; /* This will cover the entire area of the content-area */
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 50px;
-  max-width: 1000px;
-  margin: auto;
-  text-align: center;
-  position: relative;
-  min-height: 100vh; /* This will make sure your content area is at least the height of the viewport */
-}
+      background-image: url('177.gif');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 50px;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+      position: relative;
+      min-height: 100vh;
+    }
     .signal-display {
       border-radius: 50%;
       background-color: #003366;
@@ -53,9 +53,9 @@
  <div class="content-area">
   <div id="signalDisplay" class="signal-display">GET SIGNAL</div>
   <button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">GET SIGNAL</button>
-<div id="timerContainer" style="display: none;">
-  <div id="timer">60</div>
-</div>
+  <div id="timerContainer" style="display: none;">
+    <div id="timer">60</div>
+  </div>
   <div id="loaderContainer" class="loader-container">
     <div id="loaderBar" class="loader-bar"></div>
   </div>
@@ -64,8 +64,6 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // Your JavaScript code here
   var signalButton = document.getElementById('signalButton');
   var signalDisplay = document.getElementById('signalDisplay');
   var progressBar = document.getElementById('progressBar');
@@ -99,8 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }, 1000);
   }
-
-});
 </script>
 </body>
 </html>
