@@ -45,22 +45,23 @@
       margin-top: auto;
     }
 .btn-signal, .btn-help {
-  width: 200px;
-  height: 70px;
+  width: 200px;  /* Убедитесь, что размеры соответствуют вашим требованиям */
+  height: 70px;  /* Убедитесь, что размеры соответствуют вашим требованиям */
   margin: 10px 0;
   display: block;
   border: none;
   padding: 0;
-  background: none;
   cursor: pointer;
-  background-size: contain; /* Или 'cover' в зависимости от желаемого эффекта */
+  background-size: cover; /* Заполняет всю область кнопки, сохраняя пропорции изображения */
   background-position: center; /* Центрирование изображения */
-  background-repeat: no-repeat; /* Без повторения */
-  text-align: center; /* Выравнивание текста */
-  line-height: 70px; /* Выравнивание текста по вертикали */
-  color: white; /* Цвет текста */
-  font-size: 1.5em; /* Размер текста */
+  background-repeat: no-repeat;
+  text-indent: -9999px; /* Скрытие текста */
+  overflow: hidden; /* Убираем выходящий за пределы текст */
+  position: relative; /* Для правильного позиционирования дочерних элементов, если это необходимо */
+  align-items: center; /* Центрирование содержимого по вертикали */
+  justify-content: center; /* Центрирование содержимого по горизонтали */
 }
+
 
 #signalButton {
   background-image: url('https://fenomen555.github.io/bot/%D0%BF%D0%BB%D0%B0%D1%88%D0%BA%D0%B04.png');
