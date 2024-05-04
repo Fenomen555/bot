@@ -45,21 +45,18 @@
       margin-top: auto;
     }
 .btn-signal, .btn-help {
-  width: 200px;  /* Убедитесь, что размеры соответствуют вашим требованиям */
-  height: 70px;  /* Убедитесь, что размеры соответствуют вашим требованиям */
+  width: 200px;
+  height: 70px;
   margin: 10px 0;
   display: block;
-  border: none;
+  border: 1px solid red; /* Добавляем временную рамку для визуализации */
   padding: 0;
   cursor: pointer;
-  background-size: cover; /* Заполняет всю область кнопки, сохраняя пропорции изображения */
-  background-position: center; /* Центрирование изображения */
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
-  text-indent: -9999px; /* Скрытие текста */
-  overflow: hidden; /* Убираем выходящий за пределы текст */
-  position: relative; /* Для правильного позиционирования дочерних элементов, если это необходимо */
-  align-items: center; /* Центрирование содержимого по вертикали */
-  justify-content: center; /* Центрирование содержимого по горизонтали */
+  text-indent: 0; /* Временно убираем смещение текста */
+  overflow: visible; /* Делаем содержимое видимым */
 }
 
 
