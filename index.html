@@ -56,11 +56,33 @@
       padding: 0;
       background: none;
       cursor: pointer;
-    }
-    .btn-signal img, .btn-help img {
-      width: 100%;
-      height: 100%;
-    }
+.btn-signal, .btn-help {
+  width: 200px;
+  height: 70px; /* Высота кнопки */
+  margin: 10px 0;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  display: block;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  background-size: cover; /* Покрытие кнопки без искажения */
+  background-position: center; /* Центрирование фонового изображения */
+}
+
+#signalButton {
+  background-image: url('плашка4.png'); /* Путь к изображению для кнопки GET SIGNAL */
+}
+
+#gameButton {
+  background-image: url('плашка2.png'); /* Путь к изображению для кнопки GAME HERE */
+}
+
+#helpButton {
+  background-image: url('плашка3.png'); /* Путь к изображению для кнопки HELP */
+}
     .progress-bar {
       height: 100%;
       background-color: red;
@@ -80,16 +102,16 @@
 <div class="content-area">
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
   <div class="buttons">
-    <button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">
-      <img src="плашка4.png" alt="GET SIGNAL">
-      <div id="progressBar" class="progress-bar"></div>
-    </button>
-    <button class="btn btn-outline-light btn-lg btn-signal">
-      <img src="плашка2.png" alt="GAME HERE">
-    </button>
-    <button class="btn btn-info btn-lg btn-help">
-      <img src="плашка3.png" alt="HELP">
-    </button>
+<button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">
+  GET SIGNAL
+  <div id="progressBar" class="progress-bar"></div>
+</button>
+<button id="gameButton" class="btn btn-outline-light btn-lg btn-signal">
+  GAME HERE
+</button>
+<button id="helpButton" class="btn btn-info btn-lg btn-help">
+  HELP
+</button>
   </div>
 </div>
 
