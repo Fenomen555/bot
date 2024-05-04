@@ -44,32 +44,47 @@
       align-items: center;
       margin-top: auto;
     }
-.btn-signal, .btn-help {
-  width: 200px;
-  height: 70px;
+.btn-custom {
+  width: 200px; 
+  height: 70px; 
   margin: 10px 0;
   display: block;
-  border: 1px solid red; /* Добавляем временную рамку для визуализации */
   padding: 0;
   cursor: pointer;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  text-indent: 0; /* Временно убираем смещение текста */
-  overflow: visible; /* Делаем содержимое видимым */
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  line-height: 70px;
+  border-radius: 35px; /* Скругляем углы */
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-
+/* Индивидуальные стили для кнопок */
 #signalButton {
   background-image: url('https://fenomen555.github.io/bot/%D0%BF%D0%BB%D0%B0%D1%88%D0%BA%D0%B04.png');
+}
+#signalButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #fff;
 }
 
 #gameButton {
   background-image: url('https://fenomen555.github.io/bot/%D0%BF%D0%BB%D0%B0%D1%88%D0%BA%D0%B02.png');
 }
+#gameButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #fff;
+}
 
 #helpButton {
   background-image: url('https://fenomen555.github.io/bot/%D0%BF%D0%BB%D0%B0%D1%88%D0%BA%D0%B03.png');
+}
+#helpButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #fff;
 }
     .progress-bar {
       height: 100%;
@@ -90,11 +105,11 @@
 <div class="content-area">
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
   <div class="buttons">
-<button id="signalButton" class="btn btn-danger btn-lg btn-signal" onclick="getSignal()">
+<button id="signalButton" class="btn-custom" onclick="getSignal()">
 </button>
-<button id="gameButton" class="btn btn-outline-light btn-lg btn-signal">
+<button id="gameButton" class="btn-custom">
 </button>
-<button id="helpButton" class="btn btn-info btn-lg btn-help">
+<button id="helpButton" class="btn-custom">
 </button>
   </div>
 </div>
