@@ -52,6 +52,10 @@ video {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  position: absolute; // Добавление абсолютного позиционирования
+  bottom: 50px; // Отступ снизу
+  left: 50%;
+  transform: translateX(-50%); // Центрирование кнопок
 }
 
 .btn-signal, .btn-help {
@@ -154,7 +158,7 @@ signalButton.addEventListener('click', function() {
       startCountdown(); // Запускаем отсчёт, если он не запущен
     }
   } else {
-    signalDisplay.textContent = 'Signal: ' + generateSignal(); // Отображаем новый сигнал
+    signalDisplay.textContent = 'Signal: ' + generateSignal() + 'x'; // Добавляем 'x' после значения сигнала
     signalDisplay.style.display = 'block';
     countdownDisplay.style.display = 'none';
     signalActive = true; // Активация сигнала
