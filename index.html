@@ -119,6 +119,10 @@ video {
   var signalButton = document.getElementById('signalButton');
   var signalDisplay = document.getElementById('signalDisplay');
   var progressBar = document.getElementById('progressBar');
+  document.getElementById('signalButton').addEventListener('click', function() {
+  document.getElementById('signalDisplay').textContent = 'SIGNAL RECEIVED'; // Update text to show signal
+  // Optionally add more code here if you need to trigger other actions
+});
   // Скрипт для кнопки остаётся без изменений
 </script>
 </body>
