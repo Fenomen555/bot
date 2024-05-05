@@ -6,34 +6,26 @@
   <title>Aviator Signal</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
-  body, html {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: url('1221.gif') no-repeat center center fixed; 
+      background-size: cover; /* Покрытие всей видимой области */
+    }
 
-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-}
-
-.content-area {
-  padding: 50px;
-  max-width: 1000px;
-  margin: auto;
-  text-align: center;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
-}
+    .content-area {
+      padding: 50px;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+    }
 
 .signal-display {
   color: white; /* Consistent with button text color */
@@ -119,10 +111,6 @@ video {
   </style>
 </head>
 <body>
-<video autoplay muted loop>
-  <source src="1221.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
 <div class="content-area">
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
   <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
