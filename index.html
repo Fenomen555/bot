@@ -135,36 +135,36 @@ var countdownTimer = null;
 var signalActive = false;
 
 function generateSignal() {
-  return (Math.random() * (10 - 1.1) + 1.1).toFixed(1);
+  return (Math.random() * (10 - 1.1) + 1.1).toFixed(1); // Generates a signal between 1.1 and 10, rounded to one decimal place
 }
 
 signalButton.addEventListener('click', function() {
   if (signalActive) {
     if (countdownTimer) {
-      errorDisplay.style.display = 'block';
-      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Hide error after 2 seconds
+      errorDisplay.style.display = 'block'; // Shows the error message
+      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Hides the error message after 2 seconds
     } else {
-      startCountdown();
+      startCountdown(); // Starts the countdown if not already started
     }
   } else {
-    signalDisplay.textContent = 'Signal: ' + generateSignal();
-    signalActive = true;
+    signalDisplay.textContent = 'Signal: ' + generateSignal(); // Displays new signal
+    signalActive = true; // Prevents generating a new signal until the countdown finishes
   }
 });
 
 function startCountdown() {
-  var timeLeft = 60; // 60 seconds countdown
-  countdownDisplay.style.display = 'block';
+  var timeLeft = 60; // Start countdown from 60 seconds
   countdownDisplay.textContent = timeLeft + ' seconds';
+  countdownDisplay.style.display = 'block'; // Shows the countdown display
   countdownTimer = setInterval(function() {
     timeLeft--;
-    countdownDisplay.textContent = timeLeft + ' seconds';
+    countdownDisplay.textContent = timeLeft + ' seconds'; // Updates the displayed countdown every second
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
-      countdownDisplay.style.display = 'none';
+      countdownDisplay.style.display = 'none'; // Hides the countdown display
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = false;
+      signalActive = false; // Allows a new signal to be generated
     }
   }, 1000);
 }
