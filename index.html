@@ -101,12 +101,17 @@ video {
 }
 .countdown-display, .error-display {
   color: #FFFFFF;
-  background-color: #FF0000;
+  background-color: transparent; /* Удаление фона */
+  font-size: 20px;
+  position: absolute; /* Абсолютное позиционирование для размещения в верху */
+  top: 10px; /* Отступ сверху */
+  left: 50%;
+  transform: translateX(-50%); /* Центрирование по горизонтали */
+  display: none; /* Изначально скрыто */
   padding: 10px;
   border-radius: 5px;
-  margin-top: 10px;
-  display: none; /* Initially hidden */
-}    
+}
+    
   </style>
 </head>
 <body>
@@ -135,36 +140,36 @@ var countdownTimer = null;
 var signalActive = false;
 
 function generateSignal() {
-  return (Math.random() * (10 - 1.1) + 1.1).toFixed(1); // Generates a signal between 1.1 and 10, rounded to one decimal place
+  return (Math.random() * (10 - 1.1) + 1.1).toFixed(1); // Генерация сигнала между 1.1 и 10
 }
 
 signalButton.addEventListener('click', function() {
   if (signalActive) {
     if (countdownTimer) {
-      errorDisplay.style.display = 'block'; // Shows the error message
-      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Hides the error message after 2 seconds
+      errorDisplay.style.display = 'block'; // Показываем сообщение об ошибке
+      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
     } else {
-      startCountdown(); // Starts the countdown if not already started
+      startCountdown(); // Запускаем отсчёт, если он не запущен
     }
   } else {
-    signalDisplay.textContent = 'Signal: ' + generateSignal(); // Displays new signal
-    signalActive = true; // Prevents generating a new signal until the countdown finishes
+    startCountdown(); // Запускаем отсчёт при первом нажатии
+    signalActive = true; // Активация сигнала
   }
 });
 
 function startCountdown() {
-  var timeLeft = 60; // Start countdown from 60 seconds
+  var timeLeft = 60; // Начало отсчёта с 60 секунд
   countdownDisplay.textContent = timeLeft + ' seconds';
-  countdownDisplay.style.display = 'block'; // Shows the countdown display
+  countdownDisplay.style.display = 'block'; // Показываем отсчёт
   countdownTimer = setInterval(function() {
     timeLeft--;
-    countdownDisplay.textContent = timeLeft + ' seconds'; // Updates the displayed countdown every second
+    countdownDisplay.textContent = timeLeft + ' seconds'; // Обновляем отсчёт каждую секунду
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
-      countdownDisplay.style.display = 'none'; // Hides the countdown display
+      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = false; // Allows a new signal to be generated
+      signalActive = false; // Снова разрешаем генерацию сигнала
     }
   }, 1000);
 }
