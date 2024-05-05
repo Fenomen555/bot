@@ -47,15 +47,14 @@ video {
 }
 
 .buttons {
+  position: absolute; /* Абсолютное позиционирование для точного контроля положения */
+  left: 50%; /* Размещение по центру относительно левого края */
+  bottom: 30px; /* Отступ снизу, чтобы кнопки были у нижнего края */
+  transform: translateX(-50%); /* Смещение назад на 50% ширины элемента для точного центрирования */
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  position: absolute; // Добавление абсолютного позиционирования
-  bottom: 50px; // Отступ снизу
-  left: 50%;
-  transform: translateX(-50%); // Центрирование кнопок
+  flex-direction: row; /* Расположение кнопок в строку */
+  justify-content: center; /* Центрирование содержимого по горизонтали */
+  gap: 10px; /* Промежуток между элементами */
 }
 
 .btn-signal, .btn-help {
