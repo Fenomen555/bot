@@ -99,6 +99,14 @@ video {
   background-image: url('https://fenomen555.github.io/bot/003.png');
   margin-top: 20px;
 }
+.countdown-display, .error-display {
+  color: #FFFFFF;
+  background-color: #FF0000;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  display: none; /* Initially hidden */
+}    
   </style>
 </head>
 <body>
@@ -108,6 +116,9 @@ video {
 </video>
 <div class="content-area">
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
+  <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
+<  div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
+
   <div class="buttons">
     <button id="signalButton" class="btn btn-signal"></button>
     <button id="gameButton" class="btn btn-signal"></button>
@@ -116,14 +127,47 @@ video {
 </div>
 
 <script>
-  var signalButton = document.getElementById('signalButton');
-  var signalDisplay = document.getElementById('signalDisplay');
-  var progressBar = document.getElementById('progressBar');
-  document.getElementById('signalButton').addEventListener('click', function() {
-  document.getElementById('signalDisplay').textContent = 'SIGNAL RECEIVED'; // Update text to show signal
-  // Optionally add more code here if you need to trigger other actions
+var signalButton = document.getElementById('signalButton');
+var signalDisplay = document.getElementById('signalDisplay');
+var countdownDisplay = document.getElementById('countdownDisplay');
+var errorDisplay = document.getElementById('errorDisplay');
+var countdownTimer = null;
+var signalActive = false;
+
+function generateSignal() {
+  return (Math.random() * (10 - 1.1) + 1.1).toFixed(1);
+}
+
+signalButton.addEventListener('click', function() {
+  if (signalActive) {
+    if (countdownTimer) {
+      errorDisplay.style.display = 'block';
+      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Hide error after 2 seconds
+    } else {
+      startCountdown();
+    }
+  } else {
+    signalDisplay.textContent = 'Signal: ' + generateSignal();
+    signalActive = true;
+  }
 });
-  // Скрипт для кнопки остаётся без изменений
+
+function startCountdown() {
+  var timeLeft = 60; // 60 seconds countdown
+  countdownDisplay.style.display = 'block';
+  countdownDisplay.textContent = timeLeft + ' seconds';
+  countdownTimer = setInterval(function() {
+    timeLeft--;
+    countdownDisplay.textContent = timeLeft + ' seconds';
+    if (timeLeft <= 0) {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      countdownDisplay.style.display = 'none';
+      signalDisplay.textContent = 'WAITING FOR SIGNAL';
+      signalActive = false;
+    }
+  }, 1000);
+}
 </script>
 </body>
 </html>
