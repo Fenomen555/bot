@@ -210,12 +210,13 @@ function startCountdown() {
     countdownCircle.style.strokeDashoffset = dashOffset;
 
     if (timeLeft <= 0) {
-      clearInterval(countdownTimer);
-      countdownTimer = null;
-      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
-      signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalDisplay.style.display = 'block';
-      signalActive = false; // Снова разрешаем генерацию сигнала
+  clearInterval(countdownTimer);
+  countdownTimer = null;
+  countdownDisplay.style.display = 'none'; // Скрываем отсчёт
+  // signalDisplay.textContent = 'WAITING FOR SIGNAL'; // Убираем эту строку, чтобы не перезаписывать сигнал
+  signalDisplay.style.display = 'block'; // Оставляем отображение элемента signalDisplay
+  signalActive = false; // Снова разрешаем генерацию сигнала
+}
     }
   }, 1000);
 }
