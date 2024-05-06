@@ -110,19 +110,22 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  display: none;
   padding: 20px 30px;
-  border-radius: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2); /* Прозрачный фон */
 }
 
-@keyframes fadeInOut {
+@keyframes countdownAnimation {
   0% {
-    opacity: 0;
+    stroke-dashoffset: 565;
   }
   100% {
-    opacity: 1;
+    stroke-dashoffset: 0;
   }
+}
+
+#countdownCircle {
+  animation: countdownAnimation 60s linear forwards; /* Анимация обратного отсчета */
 }
 .error-display {
   color: white;
@@ -142,7 +145,15 @@
 <div class="content-area">
   <div id="botName" class="bot-name">@av1atorsignals_bot</div>
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
-  <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
+  <svg id="countdownDisplay" class="countdown-display" width="200" height="200">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:rgba(0,0,255,0.5);stop-opacity:1" />
+        <stop offset="100%" style="stop-color:rgba(255,0,0,0.5);stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <circle id="countdownCircle" cx="100" cy="100" r="90" fill="none" stroke="url(#grad)" stroke-width="20" stroke-dasharray="565" stroke-dashoffset="0"></circle>
+  </svg>
   <div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
 
   <div class="buttons">
