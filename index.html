@@ -112,7 +112,6 @@
       top: 90px;
       left: 50%;
       transform: translateX(-50%);
-      display: none;
       padding: 10px;
       border-radius: 5px;
       background-color: rgba(255, 0, 0, 0.7);
@@ -138,6 +137,7 @@
       width: 100%;
       height: 10px;
       background-color: transparent;
+      display: none; /* Скрыть контейнер по умолчанию */
     }
 
     .progress-bar {
@@ -175,6 +175,7 @@
 var signalButton = document.getElementById('signalButton');
 var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
+var progressBarContainer = document.querySelector('.progress-bar-container');
 var progressBar = document.querySelector('.progress-bar');
 var errorDisplay = document.getElementById('errorDisplay');
 var countdownTimer = null;
@@ -192,7 +193,8 @@ signalButton.addEventListener('click', function() {
     } else {
       countdownDisplay.style.display = 'block';
       signalDisplay.style.display = 'none';
-      progressBar.style.width = '100%'; // Reset progress bar width
+      progressBarContainer.style.display = 'block'; // Показать контейнер прогресс-бара
+      progressBar.style.width = '100%'; // Сбросить ширину прогресс-бара
       startCountdown();
     }
   } else {
@@ -206,8 +208,8 @@ signalButton.addEventListener('click', function() {
 function startCountdown() {
   var timeLeft = 60;
   countdownDisplay.textContent = timeLeft + ' seconds';
-  progressBar.style.transition = 'width 60s linear'; // Set width transition
-  progressBar.style.width = '0'; // Start progress animation
+  progressBar.style.transition = 'width 60s linear';
+  progressBar.style.width = '0';
   countdownTimer = setInterval(function() {
     timeLeft--;
     countdownDisplay.textContent = timeLeft + ' seconds';
@@ -218,6 +220,7 @@ function startCountdown() {
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
       signalDisplay.style.display = 'block';
       signalActive = false;
+      progressBarContainer.style.display = 'none'; // Скрыть контейнер прогресс-бара
     }
   }, 1000);
 }
