@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -12,7 +12,7 @@
       padding: 0;
       overflow: hidden;
       background: url('1221.gif') no-repeat center center fixed; 
-      background-size: cover; /* Покрытие всей видимой области */
+      background-size: cover;
     }
 
     .content-area {
@@ -27,125 +27,129 @@
       height: 100vh;
     }
 
-.signal-display {
-  color: white; /* Consistent with button text color */
-  font-size: 40px; /* Adjust size to match button text visibility */
-  font-family: 'Helvetica', sans-serif; /* Optional: Match button font style */
-  font-weight: bold; /* Make text bold */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Adds depth with shadow */
-  height: auto; /* Adjust height as necessary */
-  margin-top: 50px;
-  padding: 20px 0; /* Adds vertical padding */
-}
+    .signal-display {
+      color: white;
+      font-size: 40px;
+      font-family: 'Helvetica', sans-serif;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      height: auto;
+      margin-top: 50px;
+      padding: 20px 0;
+    }
 
-.buttons {
-  position: absolute;
-  left: 50%; /* Центрирование слева */
-  bottom: 20px; /* Расстояние от нижнего края */
-  transform: translateX(-50%); /* Сдвиг на 50% ширины элемента влево для центрирования */
-  display: flex;
-  flex-direction: column; /* Кнопки расположены вертикально */
-  justify-content: center;
-  align-items: center; /* Выравнивание кнопок по центру */
-  gap: 10px; /* Расстояние между кнопками */
-}
-
-.btn-signal, .btn-help {
-  width: 300px;
-  height: 70px;
-  display: block;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  text-indent: 0;
-  overflow: visible;
-  color: white;
-  font-size: 20px;
-  text-align: center;
-  line-height: 70px;
-  background-color: transparent;
-  transition: none;
-}
-
-.btn-signal:hover, .btn-signal:focus,
-.btn-signal:active, .btn-help:hover,
-.btn-help:focus, .btn-help:active {
-  background-color: transparent;
-  outline: none;
-  box-shadow: none;
-}
-
-.btn-signal:active, .btn-help:active {
-  transform: scale(0.95);
-  transition: transform 0.1s;
-}
-
-#signalButton {
-  background-image: url('https://fenomen555.github.io/bot/001.png');
-}
-
-#gameButton {
-  background-image: url('https://fenomen555.github.io/bot/002.png');
-}
-
-#helpButton {
-  background-image: url('https://fenomen555.github.io/bot/003.png');
-  margin-top: 20px;
-}
-.bot-name {
-  color: white;
-  font-size: 24px;
-  position: absolute;
-  top: 50px; /* Расстояние сверху */
-  left: 50%;
-  transform: translateX(-50%);
-}
-.countdown-display {
-  color: white;
-  font-size: 20px;
-  position: absolute;
-  top: 90px; /* Поднял таймер чуть ниже */
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: rgba(255, 0, 0, 0.7); /* Прозрачный красный фон */
-}
-.error-display {
-  color: white;
-  font-size: 15px;
-  position: absolute;
-  top: 5px; /* Помещаем текст по вертикали в самый верх */
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: rgba(255, 0, 0, 0.7); /* Прозрачный красный фон */
-}
-.progress-bar-container {
+    .buttons {
       position: absolute;
-      bottom: 0;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-signal, .btn-help {
+      width: 300px;
+      height: 70px;
+      display: block;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      text-indent: 0;
+      overflow: visible;
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      line-height: 70px;
+      background-color: transparent;
+      transition: none;
+    }
+
+    .btn-signal:hover, .btn-signal:focus,
+    .btn-signal:active, .btn-help:hover,
+    .btn-help:focus, .btn-help:active {
+      background-color: transparent;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .btn-signal:active, .btn-help:active {
+      transform: scale(0.95);
+      transition: transform 0.1s;
+    }
+
+    #signalButton {
+      background-image: url('https://fenomen555.github.io/bot/001.png');
+    }
+
+    #gameButton {
+      background-image: url('https://fenomen555.github.io/bot/002.png');
+    }
+
+    #helpButton {
+      background-image: url('https://fenomen555.github.io/bot/003.png');
+      margin-top: 20px;
+    }
+
+    .bot-name {
+      color: white;
+      font-size: 24px;
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .countdown-display {
+      color: white;
+      font-size: 20px;
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: rgba(255, 0, 0, 0.7);
+    }
+
+    .error-display {
+      color: white;
+      font-size: 15px;
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: rgba(255, 0, 0, 0.7);
+    }
+
+    .progress-bar-container {
+      position: absolute;
+      bottom: 50px;
       left: 0;
       width: 100%;
       height: 10px;
-      background-color: transparent; /* Background color for the container */
+      background-color: transparent;
     }
 
-.progress-bar {
+    .progress-bar {
       height: 100%;
-      border-radius: 5px; /* Rounded corners */
-      background: linear-gradient(90deg, rgba(255, 0, 0, 0.7) 0%, rgba(0, 0, 255, 0.7) 100%); /* Gradient color */
-      animation: progressAnimation 60s linear; /* Animation for filling progress */
+      border-radius: 5px;
+      background: linear-gradient(90deg, rgba(255, 0, 0, 0.7) 0%, rgba(0, 0, 255, 0.7) 100%);
+      animation: progressAnimation 60s linear;
     }
 
     @keyframes progressAnimation {
       to {
-        width: 0; /* Animate width to 0 to simulate progress */
+        width: 0;
       }
     }   
   </style>
@@ -155,7 +159,7 @@
   <div id="botName" class="bot-name">@av1atorsignals_bot</div>
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
   <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
-   <div class="progress-bar-container">
+  <div class="progress-bar-container">
     <div class="progress-bar"></div>
   </div>
   <div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
@@ -164,7 +168,6 @@
     <button id="signalButton" class="btn btn-signal"></button>
     <button id="gameButton" class="btn btn-signal" onclick="window.location.href='https://1wxbm.com/casino/play/spribe_aviator'"></button>
     <button id="helpButton" class="btn btn-help" onclick="window.location.href='https://t.me/Momylu'"></button>
-
   </div>
 </div>
 
@@ -172,45 +175,49 @@
 var signalButton = document.getElementById('signalButton');
 var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
+var progressBar = document.querySelector('.progress-bar');
 var errorDisplay = document.getElementById('errorDisplay');
 var countdownTimer = null;
 var signalActive = false;
 
 function generateSignal() {
-  return (Math.random() * (3.6 - 1) + 1).toFixed(1); // Генерация сигнала между 1 и 3.6
+  return (Math.random() * (3.6 - 1) + 1).toFixed(1);
 }
 
 signalButton.addEventListener('click', function() {
   if (signalActive) {
     if (countdownTimer) {
-      errorDisplay.style.display = 'block'; // Показываем сообщение об ошибке
-      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
+      errorDisplay.style.display = 'block';
+      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000);
     } else {
       countdownDisplay.style.display = 'block';
       signalDisplay.style.display = 'none';
-      startCountdown(); // Запускаем отсчёт, если он не запущен
+      progressBar.style.width = '100%'; // Reset progress bar width
+      startCountdown();
     }
   } else {
-    signalDisplay.textContent = 'Signal: ' + generateSignal() + 'x'; // Добавляем 'x' после значения сигнала
+    signalDisplay.textContent = 'Signal: ' + generateSignal() + 'x';
     signalDisplay.style.display = 'block';
     countdownDisplay.style.display = 'none';
-    signalActive = true; // Активация сигнала
+    signalActive = true;
   }
 });
 
 function startCountdown() {
-  var timeLeft = 60; // Начало отсчёта с 60 секунд
+  var timeLeft = 60;
   countdownDisplay.textContent = timeLeft + ' seconds';
+  progressBar.style.transition = 'width 60s linear'; // Set width transition
+  progressBar.style.width = '0'; // Start progress animation
   countdownTimer = setInterval(function() {
     timeLeft--;
-    countdownDisplay.textContent = timeLeft + ' seconds'; // Обновляем отсчёт каждую секунду
+    countdownDisplay.textContent = timeLeft + ' seconds';
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
-      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
+      countdownDisplay.style.display = 'none';
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
       signalDisplay.style.display = 'block';
-      signalActive = false; // Снова разрешаем генерацию сигнала
+      signalActive = false;
     }
   }, 1000);
 }
