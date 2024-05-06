@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@av1atorsignals_bot</title>
+  <title>Aviator Signal</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body, html {
@@ -27,105 +27,103 @@
       height: 100vh;
     }
 
-    .signal-display {
-      color: white; /* Consistent with button text color */
-      font-size: 40px; /* Adjust size to match button text visibility */
-      font-family: 'Helvetica', sans-serif; /* Optional: Match button font style */
-      font-weight: bold; /* Make text bold */
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Adds depth with shadow */
-      height: auto; /* Adjust height as necessary */
-      margin-top: 20px; /* Move signal text up */
-      padding: 20px 0; /* Adds vertical padding */
-    }
+.signal-display {
+  color: white; /* Consistent with button text color */
+  font-size: 40px; /* Adjust size to match button text visibility */
+  font-family: 'Helvetica', sans-serif; /* Optional: Match button font style */
+  font-weight: bold; /* Make text bold */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Adds depth with shadow */
+  height: auto; /* Adjust height as necessary */
+  margin-top: 50px;
+  padding: 20px 0; /* Adds vertical padding */
+}
 
-    .countdown-display {
-      color: white;
-      background-color: rgba(255, 0, 0, 0.5); /* Transparent red background */
-      font-size: 20px;
-      position: absolute;
-      top: 80px; /* Adjust distance from top */
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      padding: 10px;
-      border-radius: 5px;
-    }
+.buttons {
+  position: absolute;
+  left: 50%; /* Центрирование слева */
+  bottom: 20px; /* Расстояние от нижнего края */
+  transform: translateX(-50%); /* Сдвиг на 50% ширины элемента влево для центрирования */
+  display: flex;
+  flex-direction: column; /* Кнопки расположены вертикально */
+  justify-content: center;
+  align-items: center; /* Выравнивание кнопок по центру */
+  gap: 10px; /* Расстояние между кнопками */
+}
 
-    .buttons {
-      position: absolute;
-      left: 50%; /* Центрирование слева */
-      bottom: 20px; /* Расстояние от нижнего края */
-      transform: translateX(-50%); /* Сдвиг на 50% ширины элемента влево для центрирования */
-      display: flex;
-      flex-direction: column; /* Кнопки расположены вертикально */
-      justify-content: center;
-      align-items: center; /* Выравнивание кнопок по центру */
-      gap: 10px; /* Расстояние между кнопками */
-    }
+.btn-signal, .btn-help {
+  width: 300px;
+  height: 70px;
+  display: block;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-indent: 0;
+  overflow: visible;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  line-height: 70px;
+  background-color: transparent;
+  transition: none;
+}
 
-    .btn-signal, .btn-help {
-      width: 300px;
-      height: 70px;
-      display: block;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      text-indent: 0;
-      overflow: visible;
-      color: white;
-      font-size: 20px;
-      text-align: center;
-      line-height: 70px;
-      background-color: transparent;
-      transition: none;
-    }
+.btn-signal:hover, .btn-signal:focus,
+.btn-signal:active, .btn-help:hover,
+.btn-help:focus, .btn-help:active {
+  background-color: transparent;
+  outline: none;
+  box-shadow: none;
+}
 
-    .btn-signal:hover, .btn-signal:focus,
-    .btn-signal:active, .btn-help:hover,
-    .btn-help:focus, .btn-help:active {
-      background-color: transparent;
-      outline: none;
-      box-shadow: none;
-    }
+.btn-signal:active, .btn-help:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}
 
-    .btn-signal:active, .btn-help:active {
-      transform: scale(0.95);
-      transition: transform 0.1s;
-    }
+#signalButton {
+  background-image: url('https://fenomen555.github.io/bot/001.png');
+}
 
-    #signalButton {
-      background-image: url('https://fenomen555.github.io/bot/001.png');
-    }
+#gameButton {
+  background-image: url('https://fenomen555.github.io/bot/002.png');
+}
 
-    #gameButton {
-      background-image: url('https://fenomen555.github.io/bot/002.png');
-    }
+#helpButton {
+  background-image: url('https://fenomen555.github.io/bot/003.png');
+  margin-top: 20px;
+}
+.bot-name {
+  color: white;
+  font-size: 24px;
+  position: absolute;
+  top: 50px; /* Расстояние сверху */
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-    #helpButton {
-      background-image: url('https://fenomen555.github.io/bot/003.png');
-      margin-top: 20px;
-    }
+.countdown-display  .error-display {
+  color: white;
+  font-size: 20px;
+  position: absolute;
+  top: 90px; /* Поднял таймер чуть ниже */
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(255, 0, 0, 0.7); /* Прозрачный красный фон */
+}    
 
-    .error-display {
-      color: #FFFFFF;
-      background-color: rgba(255, 0, 0, 0.5); /* Transparent red background */
-      font-size: 20px;
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      padding: 10px;
-      border-radius: 5px;
-    }
+    
   </style>
 </head>
 <body>
 <div class="content-area">
-  <div class="signal-display">@av1atorsignals_bot</div>
+  <div id="botName" class="bot-name">@av1atorsignals_bot</div>
+  <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
   <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
   <div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
 
@@ -139,7 +137,7 @@
 
 <script>
 var signalButton = document.getElementById('signalButton');
-var signalDisplay = document.querySelector('.signal-display'); // Changed to querySelector to select by class
+var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
 var errorDisplay = document.getElementById('errorDisplay');
 var countdownTimer = null;
