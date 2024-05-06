@@ -168,14 +168,27 @@ signalButton.addEventListener('click', function() {
       setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
     } else {
       countdownDisplay.style.display = 'block';
-      signalDisplay.style.display = 'none'; // Скрываем основной сигнал во время обратного отсчета
+      signalDisplay.style.display = 'none';
       startCountdown(); // Запускаем отсчёт, если он не запущен
     }
   } else {
-    signalDisplay.textContent = 'Signal: ' + generateSignal() + 'x'; // Добавляем 'x' после значения сигнала
+    var signalValue = generateSignal(); // Генерируем новый сигнал
+    signalDisplay.textContent = 'Signal: ' + signalValue + 'x'; // Добавляем 'x' после значения сигнала
     signalDisplay.style.display = 'block';
     countdownDisplay.style.display = 'none';
     signalActive = true; // Активация сигнала
+    
+    // Очищаем предыдущий таймер и сигнал
+    clearTimeout(signalTimeout);
+    clearTimeout(countdownTimeout);
+    signalTimeout = setTimeout(function() { 
+      signalDisplay.textContent = 'WAITING FOR SIGNAL';
+      signalActive = false;
+    }, 60000); // После 60 секунд убираем полученный сигнал и разрешаем запросить новый
+    
+    // Отображаем таймер выше полученного сигнала
+    countdownDisplay.style.display = 'block';
+    startCountdown();
   }
 });
 
