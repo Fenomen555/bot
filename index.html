@@ -163,32 +163,23 @@ function generateSignal() {
 }
 
 signalButton.addEventListener('click', function() {
-  if (signalActive) {
-    if (countdownTimer) {
-      errorDisplay.style.display = 'block'; // Показываем сообщение об ошибке
-      setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
-    } else {
-      countdownDisplay.style.display = 'block';
-      startCountdown(); // Запускаем отсчёт, если он не запущен
-    }
-  } else {
-    var signalValue = generateSignal(); // Генерируем новый сигнал
-    signalDisplay.textContent = 'Signal: ' + signalValue + 'x'; // Обновляем отображение сигнала
-    signalDisplay.style.display = 'block'; // Ensure the signal display is visible
-    countdownDisplay.style.display = 'block'; // Ensure the countdown display is visible
-    signalActive = true; // Активация сигнала
-    
-    // Очищаем предыдущий таймер и сигнал
+    // Очищаем все существующие таймеры и сбрасываем состояния
     clearTimeout(signalTimeout);
-    clearTimeout(countdownTimeout);
-    signalTimeout = setTimeout(function() { 
-      signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = true;
-    }, 60000); // После 60 секунд убираем полученный сигнал и разрешаем запросить новый
+    clearInterval(countdownTimer);
     
-    // Отображаем таймер выше полученного сигнала
-    startCountdown(); // Начинаем отсчет
-  }
+    // Генерация и отображение нового сигнала
+    var signalValue = generateSignal();
+    signalDisplay.textContent = 'Signal: ' + signalValue + 'x';
+    signalDisplay.style.display = 'block';
+    countdownDisplay.style.display = 'block';
+    
+    // Установка нового таймера сигнала
+    signalTimeout = setTimeout(function() { 
+        signalDisplay.textContent = 'WAITING FOR SIGNAL';
+    }, 60000); // Сигнал будет доступен 60 секунд
+    
+    // Начинаем отсчет
+    startCountdown();
 });
 
 function startCountdown() {
