@@ -183,7 +183,7 @@ signalButton.addEventListener('click', function() {
     clearTimeout(countdownTimeout);
     signalTimeout = setTimeout(function() { 
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = false;
+      signalActive = true;
     }, 60000); // После 60 секунд убираем полученный сигнал и разрешаем запросить новый
     
     // Отображаем таймер выше полученного сигнала
