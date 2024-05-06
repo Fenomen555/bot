@@ -200,6 +200,7 @@ function startCountdown() {
 
   var perimeter = countdownCircle.getTotalLength(); // Получим периметр круга
 
+  clearInterval(countdownTimer); // Очищаем предыдущий таймер, если он существует
   countdownTimer = setInterval(function() {
     timeLeft--;
     countdownText.textContent = timeLeft; // Обновляем отображаемое время
