@@ -168,7 +168,7 @@ signalButton.addEventListener('click', function() {
       setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
     } else {
       countdownDisplay.style.display = 'block';
-      signalDisplay.style.display = 'none';
+      signalDisplay.style.display = 'none'; // Скрываем основной сигнал во время обратного отсчета
       startCountdown(); // Запускаем отсчёт, если он не запущен
     }
   } else {
