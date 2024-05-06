@@ -114,21 +114,14 @@
   padding: 20px 30px;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.8);
-  animation: fadeInOut 0.5s ease-in-out forwards;
 }
 
 @keyframes fadeInOut {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.1);
   }
   100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
   }
 }
 .error-display {
@@ -193,13 +186,13 @@ signalButton.addEventListener('click', function() {
 function startCountdown() {
   var timeLeft = 60; // Начало отсчёта с 60 секунд
   countdownDisplay.textContent = timeLeft + ' seconds';
+  countdownDisplay.style.display = 'block'; // Показываем таймер перед запуском отсчета
   countdownTimer = setInterval(function() {
     timeLeft--;
     countdownDisplay.textContent = timeLeft + ' seconds'; // Обновляем отсчёт каждую секунду
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
-      countdownTimer = null;
-      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
+      countdownDisplay.style.display = 'none'; // Скрываем таймер после завершения отсчета
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
       signalDisplay.style.display = 'block';
       signalActive = false; // Снова разрешаем генерацию сигнала
