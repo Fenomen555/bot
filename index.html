@@ -163,33 +163,41 @@ function generateSignal() {
 }
 
 signalButton.addEventListener('click', function() {
-    // Очищаем все существующие таймеры и сбрасываем состояния
-    clearTimeout(signalTimeout);
-    clearInterval(countdownTimer);
-    
-    // Генерация и отображение нового сигнала
+  // Если таймер обратного отсчёта уже активен
+  if (countdownTimer) {
+    errorDisplay.style.display = 'block'; // Показываем сообщение об ошибке
+    setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
+  } else {
+    // Генерируем новый сигнал и показываем его
     var signalValue = generateSignal();
     signalDisplay.textContent = 'Signal: ' + signalValue + 'x';
     signalDisplay.style.display = 'block';
+
+    // Отображаем таймер обратного отсчёта
     countdownDisplay.style.display = 'block';
-    
-    // Установка нового таймера сигнала
-    signalTimeout = setTimeout(function() { 
-        signalDisplay.textContent = 'WAITING FOR SIGNAL';
-    }, 60000); // Сигнал будет доступен 60 секунд
-    
-    // Начинаем отсчет
     startCountdown();
+
+    // Перезапускаем таймер сигнала
+    clearTimeout(signalTimeout);
+    signalTimeout = setTimeout(function() { 
+      signalDisplay.textContent = 'WAITING FOR SIGNAL';
+      countdownDisplay.style.display = 'none';
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      signalActive = false;
+    }, 60000); // Сигнал будет доступен 60 секунд
+  }
 });
 
 function startCountdown() {
   var timeLeft = 60; // Начало отсчёта с 60 секунд
   var countdownText = document.getElementById('countdownText');
   var countdownCircle = document.getElementById('countdownCircle');
-  
+
   countdownText.textContent = timeLeft; // Установим начальное значение времени
 
   var perimeter = countdownCircle.getTotalLength(); // Получим периметр круга
+  countdownCircle.style.strokeDasharray = perimeter;
 
   clearInterval(countdownTimer); // Очищаем предыдущий таймер, если он существует
   countdownTimer = setInterval(function() {
@@ -197,7 +205,6 @@ function startCountdown() {
     countdownText.textContent = timeLeft; // Обновляем отображаемое время
 
     var dashOffset = perimeter * (1 - timeLeft / 60); // Вычисляем смещение линии в зависимости от времени
-    countdownCircle.style.strokeDasharray = perimeter;
     countdownCircle.style.strokeDashoffset = dashOffset;
 
     if (timeLeft <= 0) {
@@ -205,7 +212,6 @@ function startCountdown() {
       countdownTimer = null;
       countdownDisplay.style.display = 'none'; // Скрываем отсчёт
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalDisplay.style.display = 'block';
       signalActive = false; // Снова разрешаем генерацию сигнала
     }
   }, 1000);
