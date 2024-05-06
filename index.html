@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -105,28 +105,15 @@
 }
 .countdown-display {
   color: white;
-  font-size: 40px;
+  font-size: 20px;
   position: absolute;
-  top: 50%;
+  top: 90px; /* Поднял таймер чуть ниже */
   left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px 30px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.2); /* Прозрачный фон */
+  transform: translateX(-50%);
   display: none;
-}
-
-@keyframes countdownAnimation {
-  0% {
-    stroke-dashoffset: 565;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-#countdownCircle {
-  animation: countdownAnimation 60s linear forwards; /* Анимация обратного отсчета */
+  padding: 10px;
+  border-radius: 5px;
+  background-color: rgba(255, 0, 0, 0.7); /* Прозрачный красный фон */
 }
 .error-display {
   color: white;
@@ -146,23 +133,14 @@
 <div class="content-area">
   <div id="botName" class="bot-name">@av1atorsignals_bot</div>
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
-  <div id="countdownDisplay" class="countdown-display"> <!-- Removed inline style -->
-    <svg id="countdownCircle" width="200" height="200">
-      <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:rgba(0,0,255,0.5);stop-opacity:1" />
-          <stop offset="100%" style="stop-color:rgba(255,0,0,0.5);stop-opacity:1" />
-        </linearGradient>
-      </defs>
-      <circle cx="100" cy="100" r="90" fill="none" stroke="url(#grad)" stroke-width="20" stroke-dasharray="565" stroke-dashoffset="565"></circle>
-    </svg>
-  </div>
+  <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
   <div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
 
   <div class="buttons">
     <button id="signalButton" class="btn btn-signal"></button>
     <button id="gameButton" class="btn btn-signal" onclick="window.location.href='https://1wxbm.com/casino/play/spribe_aviator'"></button>
     <button id="helpButton" class="btn btn-help" onclick="window.location.href='https://t.me/Momylu'"></button>
+
   </div>
 </div>
 
@@ -185,7 +163,6 @@ signalButton.addEventListener('click', function() {
       setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
     } else {
       countdownDisplay.style.display = 'block';
-      document.getElementById('countdownCircle').beginElement(); // Запускаем анимацию круга
       signalDisplay.style.display = 'none';
       startCountdown(); // Запускаем отсчёт, если он не запущен
     }
@@ -200,13 +177,13 @@ signalButton.addEventListener('click', function() {
 function startCountdown() {
   var timeLeft = 60; // Начало отсчёта с 60 секунд
   countdownDisplay.textContent = timeLeft + ' seconds';
-  countdownDisplay.style.display = 'block'; // Показываем таймер перед запуском отсчета
   countdownTimer = setInterval(function() {
     timeLeft--;
     countdownDisplay.textContent = timeLeft + ' seconds'; // Обновляем отсчёт каждую секунду
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
-      countdownDisplay.style.display = 'none'; // Скрываем таймер после завершения отсчета
+      countdownTimer = null;
+      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
       signalDisplay.style.display = 'block';
       signalActive = false; // Снова разрешаем генерацию сигнала
