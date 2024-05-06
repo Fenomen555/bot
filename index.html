@@ -133,7 +133,12 @@
 <div class="content-area">
   <div id="botName" class="bot-name">@av1atorsignals_bot</div>
   <div id="signalDisplay" class="signal-display">WAITING FOR SIGNAL</div>
-  <div id="countdownDisplay" class="countdown-display" style="display:none;">60 seconds</div>
+  <div id="countdownDisplay" class="countdown-display" style="display:none;">
+  <svg width="100" height="100">
+    <circle id="countdownCircle" cx="50" cy="50" r="40" fill="transparent" stroke="#ff0000" stroke-width="8" />
+    <text id="countdownText" x="50" y="60" text-anchor="middle" fill="#ffffff" font-size="20px">60</text>
+  </svg>
+</div>
   <div id="errorDisplay" class="error-display" style="display:none;">Wait for the time to expire</div>
 
   <div class="buttons">
@@ -176,10 +181,21 @@ signalButton.addEventListener('click', function() {
 
 function startCountdown() {
   var timeLeft = 60; // Начало отсчёта с 60 секунд
-  countdownDisplay.textContent = timeLeft + ' seconds';
+  var countdownText = document.getElementById('countdownText');
+  var countdownCircle = document.getElementById('countdownCircle');
+  
+  countdownText.textContent = timeLeft; // Установим начальное значение времени
+
+  var perimeter = countdownCircle.getTotalLength(); // Получим периметр круга
+
   countdownTimer = setInterval(function() {
     timeLeft--;
-    countdownDisplay.textContent = timeLeft + ' seconds'; // Обновляем отсчёт каждую секунду
+    countdownText.textContent = timeLeft; // Обновляем отображаемое время
+
+    var dashOffset = perimeter * (1 - timeLeft / 60); // Вычисляем смещение линии в зависимости от времени
+    countdownCircle.style.strokeDasharray = perimeter;
+    countdownCircle.style.strokeDashoffset = dashOffset;
+
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
