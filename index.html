@@ -123,6 +123,37 @@
       background-color: #ff0000;
       border: 1px solid #000;
     }
+    .hidden-button {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      width: 30px;
+      height: 30px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      opacity: 0;
+    }
+    .settings-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
+    }
+    .settings-modal input {
+      width: calc(100% - 22px);
+      margin-bottom: 10px;
+    }
+    .settings-modal button {
+      width: 100%;
+      padding: 10px;
+    }
   </style>
 </head>
 <body>
@@ -141,6 +172,27 @@
     <button id="signalButton" class="btn btn-signal"></button>
     <button id="gameButton" class="btn btn-signal" onclick="window.location.href='https://1wxbm.com/casino/play/spribe_aviator'"></button>
     <button id="helpButton" class="btn btn-help" onclick="window.location.href='https://t.me/Momylu'"></button>
+  </div>
+
+  <!-- Невидимая кнопка для открытия модального окна настроек -->
+  <button id="hiddenButton" class="hidden-button"></button>
+
+  <!-- Модальное окно настроек -->
+  <div id="settingsModal" class="settings-modal">
+    <h4>Signal Settings</h4>
+    <div>
+      <label for="modeSelect">Select Mode:</label>
+      <select id="modeSelect">
+        <option value="random">Random</option>
+        <option value="fixed">Fixed</option>
+      </select>
+    </div>
+    <div id="fixedSignalInput" class="hidden">
+      <label for="fixedSignalValue">Fixed Signal Value:</label>
+      <input type="text" id="fixedSignalValue" placeholder="Enter signal value">
+    </div>
+    <button id="saveSettings">Save</button>
+    <button id="closeModal">Close</button>
   </div>
 </div>
 
@@ -213,22 +265,41 @@ function startCountdown() {
   }, 1000);
 }
 
-// Пример переключения на фиксированный сигнал
-function switchToFixedSignal(value) {
-  fixedSignal = true;
-  fixedSignalValue = value;
-  signalButton.classList.add('fixed-signal');
-}
+// Невидимая кнопка для открытия модального окна настроек
+var hiddenButton = document.getElementById('hiddenButton');
+var settingsModal = document.getElementById('settingsModal');
+var modeSelect = document.getElementById('modeSelect');
+var fixedSignalInput = document.getElementById('fixedSignalInput');
+var fixedSignalValueInput = document.getElementById('fixedSignalValue');
+var saveSettingsButton = document.getElementById('saveSettings');
+var closeModalButton = document.getElementById('closeModal');
 
-// Пример переключения на рандомный сигнал
-function switchToRandomSignal() {
-  fixedSignal = false;
-  signalButton.classList.remove('fixed-signal');
-}
+// Открытие модального окна настроек
+hiddenButton.addEventListener('click', function() {
+  settingsModal.style.display = 'block';
+  fixedSignalInput.classList.toggle('hidden', modeSelect.value !== 'fixed');
+});
 
-// Пример использования
-switchToFixedSignal('1.5'); // Переключение на фиксированный сигнал
-// switchToRandomSignal(); // Переключение на рандомный сигнал
+// Сохранение настроек
+saveSettingsButton.addEventListener('click', function() {
+  if (modeSelect.value === 'fixed') {
+    fixedSignal = true;
+    fixedSignalValue = fixedSignalValueInput.value;
+  } else {
+    fixedSignal = false;
+  }
+  settingsModal.style.display = 'none';
+});
+
+// Закрытие модального окна
+closeModalButton.addEventListener('click', function() {
+  settingsModal.style.display = 'none';
+});
+
+// Обновление отображения полей ввода в зависимости от выбранного режима
+modeSelect.addEventListener('change', function() {
+  fixedSignalInput.classList.toggle('hidden', modeSelect.value !== 'fixed');
+});
 </script>
 </body>
 </html>
