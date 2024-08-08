@@ -14,7 +14,6 @@
       background: url('1221.gif') no-repeat center center fixed; 
       background-size: cover;
     }
-
     .content-area {
       padding: 50px;
       max-width: 1000px;
@@ -26,7 +25,6 @@
       justify-content: space-between;
       height: 100vh;
     }
-
     .signal-display {
       color: white;
       font-size: 40px;
@@ -37,7 +35,6 @@
       margin-top: 50px;
       padding: 20px 0;
     }
-
     .buttons {
       position: absolute;
       left: 50%;
@@ -49,7 +46,6 @@
       align-items: center;
       gap: 10px;
     }
-
     .btn-signal, .btn-help {
       width: 300px;
       height: 70px;
@@ -69,7 +65,6 @@
       background-color: transparent;
       transition: none;
     }
-
     .btn-signal:hover, .btn-signal:focus,
     .btn-signal:active, .btn-help:hover,
     .btn-help:focus, .btn-help:active {
@@ -77,25 +72,20 @@
       outline: none;
       box-shadow: none;
     }
-
     .btn-signal:active, .btn-help:active {
       transform: scale(0.95);
       transition: transform 0.1s;
     }
-
     #signalButton {
       background-image: url('https://fenomen555.github.io/bot/004.png');
     }
-
     #gameButton {
       background-image: url('https://fenomen555.github.io/bot/002.png');
     }
-
     #helpButton {
       background-image: url('https://fenomen555.github.io/bot/003.png');
       margin-top: 20px;
     }
-
     .bot-name {
       color: white;
       font-size: 20px;
@@ -104,7 +94,6 @@
       left: 50%;
       transform: translateX(-50%);
     }
-
     .countdown-display {
       color: white;
       font-size: 40px;
@@ -116,7 +105,6 @@
       border-radius: 15px;
       background-color: transparent;
     }
-
     .error-display {
       color: white;
       font-size: 15px;
@@ -127,7 +115,14 @@
       padding: 10px;
       border-radius: 5px;
       background-color: rgba(255, 0, 0, 0.7);
-    }    
+    }
+    .hidden {
+      display: none;
+    }
+    .fixed-signal {
+      background-color: #ff0000;
+      border: 1px solid #000;
+    }
   </style>
 </head>
 <body>
@@ -155,8 +150,9 @@ var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
 var errorDisplay = document.getElementById('errorDisplay');
 var countdownTimer = null;
-var signalActive = false;
 var signalTimeout = null; 
+var fixedSignal = false; // Флаг для фиксированного сигнала
+var fixedSignalValue = '1.5'; // Значение фиксированного сигнала
 
 // Функция получения сигнала с сервера
 async function generateSignal() {
@@ -175,7 +171,7 @@ signalButton.addEventListener('click', async function() {
     errorDisplay.style.display = 'block';
     setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000);
   } else {
-    var signalValue = await generateSignal();
+    var signalValue = fixedSignal ? fixedSignalValue : await generateSignal();
     signalDisplay.textContent = 'Signal: ' + signalValue + 'x';
     signalDisplay.style.display = 'block';
 
@@ -188,7 +184,6 @@ signalButton.addEventListener('click', async function() {
       countdownDisplay.style.display = 'none';
       clearInterval(countdownTimer);
       countdownTimer = null;
-      signalActive = false;
     }, 60000);
   }
 });
@@ -214,10 +209,26 @@ function startCountdown() {
       countdownTimer = null;
       countdownDisplay.style.display = 'none';
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = false;
     }
   }, 1000);
 }
+
+// Пример переключения на фиксированный сигнал
+function switchToFixedSignal(value) {
+  fixedSignal = true;
+  fixedSignalValue = value;
+  signalButton.classList.add('fixed-signal');
+}
+
+// Пример переключения на рандомный сигнал
+function switchToRandomSignal() {
+  fixedSignal = false;
+  signalButton.classList.remove('fixed-signal');
+}
+
+// Пример использования
+switchToFixedSignal('1.5'); // Переключение на фиксированный сигнал
+// switchToRandomSignal(); // Переключение на рандомный сигнал
 </script>
 </body>
 </html>
