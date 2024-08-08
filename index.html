@@ -134,25 +134,34 @@
       cursor: pointer;
       opacity: 0;
     }
+    /* Темный стиль модального окна */
     .settings-modal {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       width: 300px;
-      background: white;
+      background: #333; /* Темный фон */
+      color: white; /* Белый текст */
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 10px rgba(0,0,0,0.7);
       display: none;
     }
-    .settings-modal input {
+    .settings-modal input,
+    .settings-modal select {
       width: calc(100% - 22px);
       margin-bottom: 10px;
+      background-color: #444; /* Темный фон для полей ввода */
+      color: white;
+      border: 1px solid #555;
     }
     .settings-modal button {
       width: 100%;
       padding: 10px;
+      background-color: #555; /* Темная кнопка */
+      color: white;
+      border: none;
     }
     .error-message {
       color: red;
@@ -208,7 +217,7 @@
 </div>
 
 <script>
-var correctPassword = '52'; // Замените на ваш пароль
+var correctPassword = 'yourpassword'; // Замените на ваш пароль
 var signalButton = document.getElementById('signalButton');
 var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
@@ -230,102 +239,99 @@ async function generateSignal() {
   }
 }
 
-signalButton.addEventListener('click', async function() {
-  if (countdownTimer) {
+signalButton.addEventListener('click', async function () {
+  if (signalTimeout) {
     errorDisplay.style.display = 'block';
-    setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000);
-  } else {
-    var signalValue = fixedSignal ? fixedSignalValue : await generateSignal();
-    signalDisplay.textContent = 'Signal: ' + signalValue + 'x';
-    signalDisplay.style.display = 'block';
-
-    countdownDisplay.style.display = 'block';
-    startCountdown();
-
-    clearTimeout(signalTimeout);
-    signalTimeout = setTimeout(function() { 
-      signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      countdownDisplay.style.display = 'none';
-      clearInterval(countdownTimer);
-      countdownTimer = null;
-    }, 60000);
+    setTimeout(() => {
+      errorDisplay.style.display = 'none';
+    }, 2000);
+    return;
   }
+
+  signalDisplay.style.display = 'none';
+  countdownDisplay.style.display = 'block';
+  startCountdown(60);
+
+  var signal = fixedSignal ? fixedSignalValue : await generateSignal();
+  signalTimeout = setTimeout(() => {
+    signalDisplay.textContent = signal;
+    signalDisplay.style.display = 'block';
+    countdownDisplay.style.display = 'none';
+    signalTimeout = null;
+  }, 60000); 
 });
 
-function startCountdown() {
-  var timeLeft = 60;
+// Функция запуска обратного отсчета
+function startCountdown(seconds) {
   var countdownText = document.getElementById('countdownText');
   var countdownCircle = document.getElementById('countdownCircle');
+  var radius = countdownCircle.getAttribute('r');
+  var circumference = 2 * Math.PI * radius;
 
-  countdownText.textContent = timeLeft;
-  var perimeter = countdownCircle.getTotalLength();
-  countdownCircle.style.strokeDasharray = perimeter;
+  countdownCircle.style.strokeDasharray = circumference;
+  countdownCircle.style.strokeDashoffset = 0;
 
-  clearInterval(countdownTimer);
-  countdownTimer = setInterval(function() {
-    timeLeft--;
-    countdownText.textContent = timeLeft;
-    var dashOffset = perimeter * (1 - timeLeft / 60);
-    countdownCircle.style.strokeDashoffset = dashOffset;
+  var startTime = Date.now();
 
-    if (timeLeft <= 0) {
+  countdownTimer = setInterval(() => {
+    var elapsed = Date.now() - startTime;
+    var remaining = seconds - Math.floor(elapsed / 1000);
+
+    if (remaining <= 0) {
       clearInterval(countdownTimer);
-      countdownTimer = null;
-      countdownDisplay.style.display = 'none';
-      signalDisplay.textContent = 'WAITING FOR SIGNAL';
+      countdownText.textContent = '0';
+      countdownCircle.style.strokeDashoffset = circumference;
+    } else {
+      countdownText.textContent = remaining;
+      countdownCircle.style.strokeDashoffset = (elapsed / (seconds * 1000)) * circumference;
     }
   }, 1000);
 }
 
-// Невидимая кнопка для открытия модального окна настроек
+// Настройки и работа с паролем
 var hiddenButton = document.getElementById('hiddenButton');
 var settingsModal = document.getElementById('settingsModal');
 var passwordInput = document.getElementById('passwordInput');
 var checkPasswordButton = document.getElementById('checkPassword');
-var settingsContent = document.getElementById('settingsContent');
 var errorMessage = document.getElementById('errorMessage');
+var settingsContent = document.getElementById('settingsContent');
 var modeSelect = document.getElementById('modeSelect');
 var fixedSignalInput = document.getElementById('fixedSignalInput');
 var fixedSignalValueInput = document.getElementById('fixedSignalValue');
 var saveSettingsButton = document.getElementById('saveSettings');
 var closeModalButton = document.getElementById('closeModal');
 
-// Открытие модального окна настроек
-hiddenButton.addEventListener('click', function() {
+hiddenButton.addEventListener('click', function () {
   settingsModal.style.display = 'block';
-  settingsContent.style.display = 'none'; // Скрыть контент настроек до проверки пароля
 });
 
-// Проверка пароля
-checkPasswordButton.addEventListener('click', function() {
-  var enteredPassword = passwordInput.value;
-  if (enteredPassword === correctPassword) {
-    errorMessage.textContent = '';
-    settingsContent.style.display = 'block'; // Показать контент настроек
+checkPasswordButton.addEventListener('click', function () {
+  if (passwordInput.value === correctPassword) {
+    settingsContent.style.display = 'block';
+    errorMessage.style.display = 'none';
+    checkPasswordButton.style.display = 'none';
   } else {
     errorMessage.textContent = 'Incorrect password';
+    errorMessage.style.display = 'block';
   }
 });
 
-// Сохранение настроек
-saveSettingsButton.addEventListener('click', function() {
-  if (modeSelect.value === 'fixed') {
-    fixedSignal = true;
-    fixedSignalValue = fixedSignalValueInput.value;
+closeModalButton.addEventListener('click', function () {
+  settingsModal.style.display = 'none';
+});
+
+saveSettingsButton.addEventListener('click', function () {
+  fixedSignal = modeSelect.value === 'fixed';
+  fixedSignalValue = fixedSignalValueInput.value;
+  settingsModal.style.display = 'none';
+});
+
+modeSelect.addEventListener('change', function () {
+  if (this.value === 'fixed') {
+    fixedSignalInput.classList.remove('hidden');
   } else {
-    fixedSignal = false;
+    fixedSignalInput.classList.add('hidden');
   }
-  settingsModal.style.display = 'none';
-});
-
-// Закрытие модального окна
-closeModalButton.addEventListener('click', function() {
-  settingsModal.style.display = 'none';
-});
-
-// Обновление отображения полей ввода в зависимости от выбранного режима
-modeSelect.addEventListener('change', function() {
-  fixedSignalInput.classList.toggle('hidden', modeSelect.value !== 'fixed');
 });
 </script>
 </body>
