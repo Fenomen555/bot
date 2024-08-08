@@ -140,7 +140,8 @@
       left: 50%;
       transform: translate(-50%, -50%);
       width: 300px;
-      background: white;
+      background: #333;
+      color: white;
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -149,10 +150,17 @@
     .settings-modal input {
       width: calc(100% - 22px);
       margin-bottom: 10px;
+      background: #555;
+      color: white;
     }
     .settings-modal button {
       width: 100%;
       padding: 10px;
+      background: #555;
+      color: white;
+    }
+    .settings-modal button:hover {
+      background: #777;
     }
   </style>
 </head>
@@ -177,22 +185,27 @@
   <!-- Невидимая кнопка для открытия модального окна настроек -->
   <button id="hiddenButton" class="hidden-button"></button>
 
-  <!-- Модальное окно настроек -->
+  <!-- Модальное окно настроек с паролем -->
   <div id="settingsModal" class="settings-modal">
-    <h4>Signal Settings</h4>
-    <div>
-      <label for="modeSelect">Select Mode:</label>
-      <select id="modeSelect">
-        <option value="random">Random</option>
-        <option value="fixed">Fixed</option>
-      </select>
+    <h4>Enter Password</h4>
+    <input type="password" id="passwordInput" placeholder="Enter password">
+    <button id="checkPassword">Submit</button>
+    <div id="settingsContent" style="display:none;">
+      <h4>Signal Settings</h4>
+      <div>
+        <label for="modeSelect">Select Mode:</label>
+        <select id="modeSelect">
+          <option value="random">Random</option>
+          <option value="fixed">Fixed</option>
+        </select>
+      </div>
+      <div id="fixedSignalInput" class="hidden">
+        <label for="fixedSignalValue">Fixed Signal Value:</label>
+        <input type="text" id="fixedSignalValue" placeholder="Enter signal value">
+      </div>
+      <button id="saveSettings">Save</button>
+      <button id="closeModal">Close</button>
     </div>
-    <div id="fixedSignalInput" class="hidden">
-      <label for="fixedSignalValue">Fixed Signal Value:</label>
-      <input type="text" id="fixedSignalValue" placeholder="Enter signal value">
-    </div>
-    <button id="saveSettings">Save</button>
-    <button id="closeModal">Close</button>
   </div>
 </div>
 
@@ -205,6 +218,9 @@ var countdownTimer = null;
 var signalTimeout = null; 
 var fixedSignal = false; // Флаг для фиксированного сигнала
 var fixedSignalValue = '1.5'; // Значение фиксированного сигнала
+
+// Пароль для доступа к настройкам
+var correctPassword = '52';
 
 // Функция получения сигнала с сервера
 async function generateSignal() {
@@ -268,16 +284,29 @@ function startCountdown() {
 // Невидимая кнопка для открытия модального окна настроек
 var hiddenButton = document.getElementById('hiddenButton');
 var settingsModal = document.getElementById('settingsModal');
+var settingsContent = document.getElementById('settingsContent');
+var passwordInput = document.getElementById('passwordInput');
+var checkPasswordButton = document.getElementById('checkPassword');
 var modeSelect = document.getElementById('modeSelect');
 var fixedSignalInput = document.getElementById('fixedSignalInput');
 var fixedSignalValueInput = document.getElementById('fixedSignalValue');
 var saveSettingsButton = document.getElementById('saveSettings');
 var closeModalButton = document.getElementById('closeModal');
 
-// Открытие модального окна настроек
+// Открытие модального окна настроек после проверки пароля
 hiddenButton.addEventListener('click', function() {
   settingsModal.style.display = 'block';
-  fixedSignalInput.classList.toggle('hidden', modeSelect.value !== 'fixed');
+});
+
+checkPasswordButton.addEventListener('click', function() {
+  var enteredPassword = passwordInput.value;
+  if (enteredPassword === correctPassword) {
+    settingsContent.style.display = 'block';
+    passwordInput.style.display = 'none';
+    checkPasswordButton.style.display = 'none';
+  } else {
+    alert('Incorrect password');
+  }
 });
 
 // Сохранение настроек
