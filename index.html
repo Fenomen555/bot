@@ -156,28 +156,32 @@ var countdownDisplay = document.getElementById('countdownDisplay');
 var errorDisplay = document.getElementById('errorDisplay');
 var countdownTimer = null;
 var signalActive = false;
-var signalTimeout = null; // Add signalTimeout variable
+var signalTimeout = null; 
 
-function generateSignal() {
-  return (Math.random() * (3.6 - 1) + 1).toFixed(1); // Генерация сигнала между 1 и 3.6
+// Функция получения сигнала с сервера
+async function generateSignal() {
+  try {
+    const response = await fetch('/get-signal');
+    const data = await response.json();
+    return data.signal;
+  } catch (error) {
+    console.error('Error fetching signal:', error);
+    return (Math.random() * (3.6 - 1) + 1).toFixed(1);
+  }
 }
 
-signalButton.addEventListener('click', function() {
-  // Если таймер обратного отсчёта уже активен
+signalButton.addEventListener('click', async function() {
   if (countdownTimer) {
-    errorDisplay.style.display = 'block'; // Показываем сообщение об ошибке
-    setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000); // Скрываем через 2 секунды
+    errorDisplay.style.display = 'block';
+    setTimeout(function() { errorDisplay.style.display = 'none'; }, 2000);
   } else {
-    // Генерируем новый сигнал и показываем его
-    var signalValue = generateSignal();
+    var signalValue = await generateSignal();
     signalDisplay.textContent = 'Signal: ' + signalValue + 'x';
     signalDisplay.style.display = 'block';
 
-    // Отображаем таймер обратного отсчёта
     countdownDisplay.style.display = 'block';
     startCountdown();
 
-    // Перезапускаем таймер сигнала
     clearTimeout(signalTimeout);
     signalTimeout = setTimeout(function() { 
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
@@ -185,34 +189,32 @@ signalButton.addEventListener('click', function() {
       clearInterval(countdownTimer);
       countdownTimer = null;
       signalActive = false;
-    }, 60000); // Сигнал будет доступен 60 секунд
+    }, 60000);
   }
 });
 
 function startCountdown() {
-  var timeLeft = 60; // Начало отсчёта с 60 секунд
+  var timeLeft = 60;
   var countdownText = document.getElementById('countdownText');
   var countdownCircle = document.getElementById('countdownCircle');
 
-  countdownText.textContent = timeLeft; // Установим начальное значение времени
-
-  var perimeter = countdownCircle.getTotalLength(); // Получим периметр круга
+  countdownText.textContent = timeLeft;
+  var perimeter = countdownCircle.getTotalLength();
   countdownCircle.style.strokeDasharray = perimeter;
 
-  clearInterval(countdownTimer); // Очищаем предыдущий таймер, если он существует
+  clearInterval(countdownTimer);
   countdownTimer = setInterval(function() {
     timeLeft--;
-    countdownText.textContent = timeLeft; // Обновляем отображаемое время
-
-    var dashOffset = perimeter * (1 - timeLeft / 60); // Вычисляем смещение линии в зависимости от времени
+    countdownText.textContent = timeLeft;
+    var dashOffset = perimeter * (1 - timeLeft / 60);
     countdownCircle.style.strokeDashoffset = dashOffset;
 
     if (timeLeft <= 0) {
       clearInterval(countdownTimer);
       countdownTimer = null;
-      countdownDisplay.style.display = 'none'; // Скрываем отсчёт
+      countdownDisplay.style.display = 'none';
       signalDisplay.textContent = 'WAITING FOR SIGNAL';
-      signalActive = false; // Снова разрешаем генерацию сигнала
+      signalActive = false;
     }
   }, 1000);
 }
