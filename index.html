@@ -140,8 +140,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       width: 300px;
-      background: #333;
-      color: white;
+      background: white;
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -150,17 +149,15 @@
     .settings-modal input {
       width: calc(100% - 22px);
       margin-bottom: 10px;
-      background: #555;
-      color: white;
     }
     .settings-modal button {
       width: 100%;
       padding: 10px;
-      background: #555;
-      color: white;
     }
-    .settings-modal button:hover {
-      background: #777;
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -185,12 +182,13 @@
   <!-- Невидимая кнопка для открытия модального окна настроек -->
   <button id="hiddenButton" class="hidden-button"></button>
 
-  <!-- Модальное окно настроек с паролем -->
+  <!-- Модальное окно настроек -->
   <div id="settingsModal" class="settings-modal">
     <h4>Enter Password</h4>
+    <div id="errorMessage" class="error-message"></div>
     <input type="password" id="passwordInput" placeholder="Enter password">
-    <button id="checkPassword">Submit</button>
-    <div id="settingsContent" style="display:none;">
+    <button id="checkPassword">Check Password</button>
+    <div id="settingsContent" style="display: none;">
       <h4>Signal Settings</h4>
       <div>
         <label for="modeSelect">Select Mode:</label>
@@ -210,6 +208,7 @@
 </div>
 
 <script>
+var correctPassword = 'yourpassword'; // Замените на ваш пароль
 var signalButton = document.getElementById('signalButton');
 var signalDisplay = document.getElementById('signalDisplay');
 var countdownDisplay = document.getElementById('countdownDisplay');
@@ -218,9 +217,6 @@ var countdownTimer = null;
 var signalTimeout = null; 
 var fixedSignal = false; // Флаг для фиксированного сигнала
 var fixedSignalValue = '1.5'; // Значение фиксированного сигнала
-
-// Пароль для доступа к настройкам
-var correctPassword = '52';
 
 // Функция получения сигнала с сервера
 async function generateSignal() {
@@ -284,28 +280,30 @@ function startCountdown() {
 // Невидимая кнопка для открытия модального окна настроек
 var hiddenButton = document.getElementById('hiddenButton');
 var settingsModal = document.getElementById('settingsModal');
-var settingsContent = document.getElementById('settingsContent');
 var passwordInput = document.getElementById('passwordInput');
 var checkPasswordButton = document.getElementById('checkPassword');
+var settingsContent = document.getElementById('settingsContent');
+var errorMessage = document.getElementById('errorMessage');
 var modeSelect = document.getElementById('modeSelect');
 var fixedSignalInput = document.getElementById('fixedSignalInput');
 var fixedSignalValueInput = document.getElementById('fixedSignalValue');
 var saveSettingsButton = document.getElementById('saveSettings');
 var closeModalButton = document.getElementById('closeModal');
 
-// Открытие модального окна настроек после проверки пароля
+// Открытие модального окна настроек
 hiddenButton.addEventListener('click', function() {
   settingsModal.style.display = 'block';
+  settingsContent.style.display = 'none'; // Скрыть контент настроек до проверки пароля
 });
 
+// Проверка пароля
 checkPasswordButton.addEventListener('click', function() {
   var enteredPassword = passwordInput.value;
   if (enteredPassword === correctPassword) {
-    settingsContent.style.display = 'block';
-    passwordInput.style.display = 'none';
-    checkPasswordButton.style.display = 'none';
+    errorMessage.textContent = '';
+    settingsContent.style.display = 'block'; // Показать контент настроек
   } else {
-    alert('Incorrect password');
+    errorMessage.textContent = 'Incorrect password';
   }
 });
 
