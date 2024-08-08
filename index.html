@@ -161,7 +161,7 @@ var signalTimeout = null;
 // Функция получения сигнала с сервера
 async function generateSignal() {
   try {
-    const response = await fetch('/get-signal');
+    const response = await fetch('http://37.252.15.29/get-signal');
     const data = await response.json();
     return data.signal;
   } catch (error) {
