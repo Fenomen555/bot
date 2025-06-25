@@ -18,297 +18,273 @@
       max-width: 600px;
       margin: 20px auto;
     }
-    h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-    .highlight-up {
-      background-color: #003300;
-      color: #00ff66;
-    }
-    .highlight-down {
-      background-color: #330000;
-      color: #ff4d4d;
-    }
-    #index {
-      font-weight: bold;
-    }
-    small {
-      font-size: 0.85em;
-      color: #999;
-    }
+    h2 { margin-top: 0; text-align: center; }
+    .highlight-up { background-color: #003300; color: #00ff66; }
+    .highlight-down { background-color: #330000; color: #ff4d4d; }
+    #index, #cap-index { font-weight: bold; }
+    small { font-size: 0.85em; color: #999; }
     select, input[type="number"], button {
-      font-size: 0.9em;
-      padding: 5px;
-      margin: 5px 0;
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 5px;
+      font-size: 0.9em; padding: 5px; margin: 5px 0; width: 100%;
+      box-sizing: border-box; border-radius: 5px;
     }
-    select, input {
-      background-color: #2c2c2c;
-      color: white;
-      border: 1px solid #444;
-    }
+    select, input { background-color: #2c2c2c; color: white; border: 1px solid #444; }
     button {
-      background-color: #4da6ff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+      background-color: #4da6ff; color: white; border: none;
+      cursor: pointer; transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #3399ff;
-    }
-    label {
-      margin-top: 10px;
-      display: block;
-    }
+    button:hover { background-color: #3399ff; }
+    label { margin-top: 10px; display: block; }
     .hidden { display: none; }
 
     .currency-options {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 8px;
-      margin: 10px 0;
+      gap: 8px; margin: 10px 0;
     }
     .currency-options label {
-      background-color: #2c2c2c;
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.2s ease;
+      background-color: #2c2c2c; padding: 6px 10px; border-radius: 6px;
+      border: 1px solid #444; display: flex; align-items: center; gap: 6px;
+      cursor: pointer; user-select: none; transition: background-color 0.2s ease;
     }
     .currency-options input[type="checkbox"] {
-      accent-color: #4da6ff;
-      transform: scale(1.2);
+      accent-color: #4da6ff; transform: scale(1.2);
     }
 
     .top20 table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9em;
-      margin-top: 10px;
+      width: 100%; border-collapse: collapse; font-size: 0.9em; margin-top: 10px;
     }
     .top20 th, td {
-      padding: 8px;
-      border-bottom: 1px solid #444;
-      text-align: left;
+      padding: 8px; border-bottom: 1px solid #444; text-align: left;
     }
-    .top20 th {
-      background: #2c2c2c;
-    }
+    .top20 th { background: #2c2c2c; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>💹 Текущие цены</h2>
-    <div id="price-list"></div>
-    <p><strong>Индекс:</strong> <span id="index">—</span></p>
-    <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
+<div class="card">
+  <h2>💹 Текущие цены</h2>
+  <div id="price-list"></div>
+  <p><strong>Индекс:</strong> <span id="index">—</span></p>
+  <p><strong>Индекс по капитализации:</strong> <span id="cap-index">—</span></p>
+  <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
+</div>
+
+<div class="panel">
+  <h2>⚙️ Админ панель</h2>
+  <label>Выберите валюты:</label>
+  <div id="included" class="currency-options">
+    <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
+    <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
+    <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
+    <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
+    <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
+    <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
+    <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
+    <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
   </div>
 
-  <div class="panel">
-    <h2>⚙️ Админ панель</h2>
-    <label>Выберите валюты:</label>
-    <div id="included" class="currency-options">
-      <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
-      <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
-      <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
-      <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
-      <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
-      <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
-      <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="XRPUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="PEPEUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="SUIUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="DOGEUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
-    </div>
+  <label>Формула:</label>
+  <select id="formula" onchange="updateFormulaUI()">
+    <option value="average">(A+B)/N</option>
+    <option value="divide">(A+B)/C</option>
+    <option value="scaled">(A+B)/C * K</option>
+  </select>
 
-    <label>Формула:</label>
-    <select id="formula" onchange="updateFormulaUI()">
-      <option value="average">(A+B)/N</option>
-      <option value="divide">(A+B)/C</option>
-      <option value="scaled">(A+B)/C * K</option>
+  <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
+    <strong>Пояснения:</strong><br>
+    <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
+    <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
+    <strong>(A+B)/C × K</strong> — как выше, но результат умножается на коэффициент K.
+  </p>
+
+  <div id="divider-block" class="hidden">
+    <label>Делить на валюту:</label>
+    <select id="divider">
+      <option value="">—</option>
+      <option value="BTCUSDT">BTCUSDT</option>
+      <option value="ETHUSDT">ETHUSDT</option>
+      <option value="SOLUSDT">SOLUSDT</option>
     </select>
-
-    <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
-      <strong>Пояснения:</strong><br>
-      <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
-      <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
-      <strong>(A+B)/C × K</strong> — как выше, но результат умножается на коэффициент K.
-    </p>
-
-    <div id="divider-block" class="hidden">
-      <label>Делить на валюту:</label>
-      <select id="divider">
-        <option value="">—</option>
-        <option value="BTCUSDT">BTCUSDT</option>
-        <option value="ETHUSDT">ETHUSDT</option>
-        <option value="SOLUSDT">SOLUSDT</option>
-        <option value="BNBUSDT">BNBUSDT</option>
-        <option value="FDUSDUSDT">FDUSDUSDT</option>
-        <option value="USDCUSDT">USDCUSDT</option>
-        <option value="SEIUSDT">SEIUSDT</option>
-        <option value="XRPUSDT">XRPUSDT</option>
-        <option value="PEPEUSDT">PEPEUSDT</option>
-        <option value="SUIUSDT">SUIUSDT</option>
-        <option value="DOGEUSDT">DOGEUSDT</option>
-        <option value="XRPUSDT">XRPUSDT</option>
-      </select>
-    </div>
-
-    <div id="scale-block" class="hidden">
-      <label>Множитель:</label>
-      <input type="number" id="scale" value="1" step="1">
-    </div>
-
-    <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
   </div>
 
-  <div class="top20">
-    <h2>📈 Топ-20 пар /USDT по объёму</h2>
-    <table id="top20-table">
-      <thead><tr><th>Пара</th><th>Объём (USDT)</th></tr></thead>
-      <tbody></tbody>
-    </table>
-    <button onclick="loadTop20()">🔁 Обновить топ‑20</button>
+  <div id="scale-block" class="hidden">
+    <label>Множитель:</label>
+    <input type="number" id="scale" value="1" step="1">
   </div>
 
-  <script>
-    let prices = {};
-    let lastIndex = null;
-    let lastMessageTime = null;
-    let socket = null;
+  <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
+</div>
 
-    const priceList = document.getElementById("price-list");
-    const indexEl = document.getElementById("index");
-    const timeEl = document.getElementById("time");
-    const pingEl = document.getElementById("ping");
+<div class="top20">
+  <h2>📈 Топ-20 пар /USDT по объёму</h2>
+  <table id="top20-table">
+    <thead><tr><th>Пара</th><th>Объём (USDT)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <button onclick="loadTop20()">🔁 Обновить топ‑20</button>
+</div>
 
-    function updateTime() {
-      const now = new Date();
-      return ${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')};
+<script>
+  let prices = {}, lastIndex = null, lastMessageTime = null, socket = null;
+  const priceList = document.getElementById("price-list");
+  const indexEl = document.getElementById("index");
+  const timeEl = document.getElementById("time");
+  const pingEl = document.getElementById("ping");
+  const capIndexEl = document.getElementById("cap-index");
+
+  function updateTime() {
+    const now = new Date();
+    return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+  }
+
+  function getSelectedValues() {
+    return Array.from(document.querySelectorAll('#included input[type="checkbox"]:checked')).map(cb => cb.value);
+  }
+
+  function renderPrices(symbols) {
+    const divider = document.getElementById("divider").value;
+    const all = [...new Set([...symbols, divider])].filter(Boolean);
+    priceList.innerHTML = '';
+    all.forEach(symbol => {
+      const val = prices[symbol];
+      if (val !== undefined) {
+        priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
+      }
+    });
+  }
+
+  function updateFormulaUI() {
+    const formula = document.getElementById("formula").value;
+    document.getElementById("divider-block").classList.toggle("hidden", formula === 'average');
+    document.getElementById("scale-block").classList.toggle("hidden", formula !== 'scaled');
+  }
+
+  function subscribeToPrices(symbols) {
+    if (socket) socket.close();
+    prices = {};
+    const divider = document.getElementById("divider").value;
+    const all = [...new Set([...symbols, divider])].filter(Boolean);
+    const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
+    socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+    socket.onmessage = (event) => {
+      const now = performance.now();
+      if (lastMessageTime !== null) pingEl.textContent = Math.round(now - lastMessageTime).toString();
+      lastMessageTime = now;
+
+      const data = JSON.parse(event.data).data;
+      const symbol = data.s;
+      const price = parseFloat(data.c);
+      prices[symbol] = price;
+
+      const included = getSelectedValues();
+      renderPrices(included);
+      recalculateIndex();
+      recalculateCapIndex();
+      timeEl.textContent = updateTime();
+    };
+  }
+
+  function recalculateIndex() {
+    const included = getSelectedValues();
+    const formula = document.getElementById("formula").value;
+    const divider = document.getElementById("divider").value;
+    const scale = parseFloat(document.getElementById("scale").value || 1);
+
+    if (!included.every(s => prices[s]) || (formula !== 'average' && (!divider || !prices[divider]))) return;
+
+    const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
+    let index = 0;
+
+    if (formula === 'average') index = sum / included.length;
+    else if (formula === 'divide') index = sum / prices[divider];
+    else if (formula === 'scaled') index = (sum / prices[divider]) * scale;
+
+    const indexFixed = index.toFixed(4);
+    indexEl.textContent = indexFixed;
+
+    if (lastIndex !== null) {
+      indexEl.classList.toggle("highlight-up", index > lastIndex);
+      indexEl.classList.toggle("highlight-down", index < lastIndex);
+      setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
     }
+    lastIndex = index;
+  }
 
-    function getSelectedValues() {
-      return Array.from(document.querySelectorAll('#included input[type="checkbox"]:checked'))
-                  .map(cb => cb.value);
-    }
+  function loadTop20() {
+    fetch('https://api.binance.com/api/v3/ticker/24hr')
+      .then(r => r.json())
+      .then(data => {
+        const top = data.filter(t => t.symbol.endsWith('USDT'))
+                        .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                        .slice(0, 20);
+        const tbody = document.querySelector('#top20-table tbody');
+        tbody.innerHTML = '';
+        top.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>`;
+          tbody.appendChild(row);
+        });
+      });
+  }
 
-    function renderPrices(activeSymbols) {
-      const divider = document.getElementById("divider").value;
-      const all = [...new Set([...activeSymbols, divider])].filter(Boolean);
-      priceList.innerHTML = '';
-      all.forEach(symbol => {
-        const val = prices[symbol];
-        if (val !== undefined) {
-          priceList.innerHTML += <p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>;
+  // --- Индекс по капитализации ---
+  let capData = {};
+  const ids = {
+    BTCUSDT: "bitcoin", ETHUSDT: "ethereum", USDTUSDT: "tether", BNBUSDT: "binancecoin",
+    SOLUSDT: "solana", XRPUSDT: "ripple", USDCUSDT: "usd-coin", ADAUSDT: "cardano",
+    AVAXUSDT: "avalanche-2", DOGEUSDT: "dogecoin", FDUSDUSDT: "first-digital-usd",
+    SEIUSDT: "sei-network", PEPEUSDT: "pepe", SUIUSDT: "sui"
+  };
+
+  async function fetchCapData() {
+    const symbols = getSelectedValues();
+    const idList = symbols.map(sym => ids[sym]).filter(Boolean).join(",");
+    if (!idList) return;
+    try {
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${idList}`);
+      const data = await res.json();
+      capData = {};
+      data.forEach(item => {
+        const key = Object.keys(ids).find(k => ids[k] === item.id);
+        if (key) {
+          capData[key] = { market_cap: item.market_cap, supply: item.circulating_supply };
         }
       });
+      recalculateCapIndex();
+    } catch (e) {
+      console.error("❌ Ошибка загрузки капитализации:", e);
     }
+  }
 
-    function updateFormulaUI() {
-      const formula = document.getElementById("formula").value;
-      document.getElementById("divider-block").classList.toggle("hidden", formula === 'average');
-      document.getElementById("scale-block").classList.toggle("hidden", formula !== 'scaled');
-    }
+  function recalculateCapIndex() {
+    const symbols = getSelectedValues();
+    if (!symbols.every(s => prices[s] && capData[s])) return;
 
-    function subscribeToPrices(symbols) {
-      if (socket) socket.close();
-      prices = {};
-      const divider = document.getElementById("divider").value;
-      const all = [...new Set([...symbols, divider])].filter(Boolean);
-      const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
-      socket = new WebSocket(wss://stream.binance.com:9443/stream?streams=${streams});
+    const marketCaps = symbols.map(s => prices[s] * capData[s].supply);
+    const totalCap = marketCaps.reduce((a, b) => a + b, 0);
+    let index = 0;
+    symbols.forEach(s => {
+      const price = prices[s];
+      const supply = capData[s].supply;
+      const weight = (price * supply) / totalCap;
+      index += price * weight;
+    });
+    capIndexEl.textContent = index.toFixed(4);
+  }
 
-      socket.onmessage = (event) => {
-        const now = performance.now();
-        if (lastMessageTime !== null) {
-          pingEl.textContent = Math.round(now - lastMessageTime).toString();
-        }
-        lastMessageTime = now;
+  const oldRefresh = refreshPrices;
+  refreshPrices = function () {
+    oldRefresh();
+    fetchCapData();
+  };
 
-        const data = JSON.parse(event.data).data;
-        const symbol = data.s;
-        const price = parseFloat(data.c);
-        prices[symbol] = price;
-
-        const included = getSelectedValues();
-        renderPrices(included);
-        recalculateIndex();
-        timeEl.textContent = updateTime();
-      };
-    }
-
-    function recalculateIndex() {
-      const included = getSelectedValues();
-      const formula = document.getElementById("formula").value;
-      const divider = document.getElementById("divider").value;
-      const scale = parseFloat(document.getElementById("scale").value || 1);
-
-      if (!included.every(s => prices[s]) || (formula !== 'average' && (!divider || !prices[divider]))) return;
-
-      const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
-      let index = 0;
-
-      if (formula === 'average') {
-        index = sum / included.length;
-      } else if (formula === 'divide') {
-        index = sum / prices[divider];
-      } else if (formula === 'scaled') {
-        index = (sum / prices[divider]) * scale;
-      }
-
-      const indexFixed = index.toFixed(4);
-      indexEl.textContent = indexFixed;
-
-      if (lastIndex !== null) {
-        indexEl.classList.toggle("highlight-up", index > lastIndex);
-        indexEl.classList.toggle("highlight-down", index < lastIndex);
-        setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
-      }
-
-      lastIndex = index;
-    }
-
-    function refreshPrices() {
-      const included = getSelectedValues();
-      subscribeToPrices(included);
-    }
-
-    function loadTop20() {
-      fetch('https://api.binance.com/api/v3/ticker/24hr')
-        .then(r => r.json())
-        .then(data => {
-          const top = data
-            .filter(t => t.symbol.endsWith('USDT'))
-            .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
-            .slice(0, 20);
-
-          const tbody = document.querySelector('#top20-table tbody');
-          tbody.innerHTML = '';
-          top.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = <td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>;
-            tbody.appendChild(row);
-          });
-        });
-    }
-
-    window.onload = () => {
-      updateFormulaUI();
-      refreshPrices();
-      loadTop20();
-    }
-  </script>
+  window.onload = () => {
+    updateFormulaUI();
+    refreshPrices();
+    loadTop20();
+  };
+</script>
 
 </body>
-</html> 
+</html>
