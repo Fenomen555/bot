@@ -11,7 +11,7 @@
       background-color: #121212;
       color: #e0e0e0;
     }
-    .card, .panel, .top20 {
+    .card, .panel, .top20, .cap-panel {
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
@@ -56,6 +56,9 @@
       padding: 8px; border-bottom: 1px solid #444; text-align: left;
     }
     .top20 th { background: #2c2c2c; }
+    .cap-panel p {
+      font-size: 0.85em; color: #ccc; line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -64,7 +67,6 @@
   <h2>💹 Текущие цены</h2>
   <div id="price-list"></div>
   <p><strong>Индекс:</strong> <span id="index">—</span></p>
-  <p><strong>Индекс по капитализации:</strong> <span id="cap-index">—</span></p>
   <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
 </div>
 
@@ -112,6 +114,20 @@
   </div>
 
   <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
+</div>
+
+<div class="cap-panel">
+  <h2>🧮 Индекс по капитализации</h2>
+  <p><strong>Значение:</strong> <span id="cap-index">—</span></p>
+  <p>Этот индекс рассчитывается на основе:</p>
+  <ul>
+    <li>📉 Текущих цен с Binance (в реальном времени)</li>
+    <li>📊 Объёмов предложения (circulating supply) с CoinGecko</li>
+    <li>💰 Рыночной капитализации = Цена × Предложение</li>
+  </ul>
+  <p>Вес каждой валюты = её капитализация / общая капитализация, затем:</p>
+  <p><code>Индекс = Σ (цена × вес)</code></p>
+  <p>Индекс мгновенно обновляется при изменении любой из цен.</p>
 </div>
 
 <div class="top20">
