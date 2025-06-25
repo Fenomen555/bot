@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Цены TOP-4 USDT</title>
+  <title>Цены TOP-5 USDT + Панель</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -10,13 +10,13 @@
       background-color: #121212;
       color: #e0e0e0;
     }
-    .card {
+    .card, .panel {
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       max-width: 400px;
-      margin: auto;
+      margin: 20px auto;
     }
     h2 {
       margin-top: 0;
@@ -25,12 +25,10 @@
     .highlight-up {
       background-color: #003300;
       color: #00ff66;
-      transition: background-color 0.3s ease;
     }
     .highlight-down {
       background-color: #330000;
       color: #ff4d4d;
-      transition: background-color 0.3s ease;
     }
     #index {
       font-weight: bold;
@@ -39,10 +37,27 @@
       font-size: 0.85em;
       color: #999;
     }
-    a {
-      color: #4da6ff;
-      text-decoration: none;
+    a, label, select, input[type="number"] {
       font-size: 0.9em;
+      color: #e0e0e0;
+    }
+    select, input[type="number"] {
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      padding: 5px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      background: #4da6ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -52,63 +67,62 @@
     <p><strong>SOLUSDT:</strong> <span id="sol">—</span></p>
     <p><strong>ETHUSDT:</strong> <span id="eth">—</span></p>
     <p><strong>XRPUSDT:</strong> <span id="xrp">—</span></p>
+    <p><strong>BNBUSDT:</strong> <span id="bnb">—</span></p>
     <p><strong>BTCUSDT:</strong> <span id="btc">—</span></p>
     <p><strong>Индекс:</strong> <span id="index">—</span></p>
     <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
+  </div>
+
+  <div class="panel">
+    <h2>⚙️ Админ панель</h2>
+    <label for="formula">Формула:</label>
+    <select id="formula">
+      <option value="avg">(A + B + ...)/N</option>
+      <option value="div">(A + B)/C</option>
+      <option value="scaled">((A + B)/C)*K</option>
+    </select>
+    <label for="scale">Множитель (K):</label>
+    <input type="number" id="scale" value="1000" step="1">
+    <button onclick="recalculateIndex()">🔄 Пересчитать индекс</button>
   </div>
 
   <script>
     const prices = {};
     let lastIndex = null;
     let lastMessageTime = null;
-
     const elements = {
       SOLUSDT: document.getElementById("sol"),
       ETHUSDT: document.getElementById("eth"),
       XRPUSDT: document.getElementById("xrp"),
+      BNBUSDT: document.getElementById("bnb"),
       BTCUSDT: document.getElementById("btc"),
       index: document.getElementById("index"),
       time: document.getElementById("time"),
       ping: document.getElementById("ping")
     };
 
-    const updateTextIfChanged = (el, newText) => {
-      if (el.textContent !== newText) {
-        el.textContent = newText;
-      }
-    };
+    function updateTextIfChanged(el, newText) {
+      if (el.textContent !== newText) el.textContent = newText;
+    }
 
-    const getTimeStringWithMs = () => {
+    function getTimeStringWithMs() {
       const now = new Date();
       return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
-    };
+    }
 
-    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/btcusdt@ticker");
+    function recalculateIndex() {
+      const formula = document.getElementById("formula").value;
+      const scale = parseFloat(document.getElementById("scale").value || 1);
 
-    ws.onmessage = (event) => {
-      const now = performance.now();
-      if (lastMessageTime !== null) {
-        const ping = Math.round(now - lastMessageTime);
-        updateTextIfChanged(elements.ping, ping.toString());
-      }
-      lastMessageTime = now;
-
-      const data = JSON.parse(event.data).data;
-      const symbol = data.s;
-      const price = parseFloat(data.c);
-
-      prices[symbol] = price;
-
-      if (elements[symbol]) {
-        updateTextIfChanged(elements[symbol], price.toFixed(6));
-      }
-
-      if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BTCUSDT"].every(s => prices[s])) {
-        const index = (
-          prices.ETHUSDT +
-          prices.SOLUSDT +
-          prices.XRPUSDT 
-        ) / prices.BTCUSDT *1000;
+      if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BTCUSDT", "BNBUSDT"].every(s => prices[s])) {
+        let index = 0;
+        if (formula === "avg") {
+          index = (prices.ETHUSDT + prices.SOLUSDT + prices.XRPUSDT + prices.BNBUSDT) / 4;
+        } else if (formula === "div") {
+          index = (prices.ETHUSDT + prices.SOLUSDT) / prices.BTCUSDT;
+        } else if (formula === "scaled") {
+          index = ((prices.ETHUSDT + prices.SOLUSDT) / prices.BTCUSDT) * scale;
+        }
 
         const indexFixed = index.toFixed(4);
         updateTextIfChanged(elements.index, indexFixed);
@@ -116,15 +130,28 @@
         if (lastIndex !== null) {
           elements.index.classList.toggle("highlight-up", index > lastIndex);
           elements.index.classList.toggle("highlight-down", index < lastIndex);
-
-          setTimeout(() => {
-            elements.index.classList.remove("highlight-up", "highlight-down");
-          }, 300);
+          setTimeout(() => elements.index.classList.remove("highlight-up", "highlight-down"), 300);
         }
-
         lastIndex = index;
       }
+    }
 
+    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/bnbusdt@ticker/btcusdt@ticker");
+
+    ws.onmessage = (event) => {
+      const now = performance.now();
+      if (lastMessageTime !== null) {
+        updateTextIfChanged(elements.ping, Math.round(now - lastMessageTime).toString());
+      }
+      lastMessageTime = now;
+
+      const data = JSON.parse(event.data).data;
+      const symbol = data.s;
+      const price = parseFloat(data.c);
+      prices[symbol] = price;
+      if (elements[symbol]) updateTextIfChanged(elements[symbol], price.toFixed(6));
+
+      recalculateIndex();
       updateTextIfChanged(elements.time, getTimeStringWithMs());
     };
   </script>
