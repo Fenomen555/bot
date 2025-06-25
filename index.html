@@ -100,7 +100,7 @@
       prices[symbol] = price;
 
       if (elements[symbol]) {
-        updateTextIfChanged(elements[symbol], price.toFixed(4));
+        updateTextIfChanged(elements[symbol], price.toFixed(6));
       }
 
       if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BTCUSDT"].every(s => prices[s])) {
@@ -108,7 +108,7 @@
           prices.ETHUSDT +
           prices.SOLUSDT +
           prices.XRPUSDT 
-        ) / prices.BTCUSDT;
+        ) / prices.BTCUSDT *10;
 
         const indexFixed = index.toFixed(4);
         updateTextIfChanged(elements.index, indexFixed);
