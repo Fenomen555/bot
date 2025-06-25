@@ -15,7 +15,7 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      max-width: 400px;
+      max-width: 600px;
       margin: 20px auto;
     }
     h2 {
@@ -37,52 +37,60 @@
       font-size: 0.85em;
       color: #999;
     }
-    a, label, select, input[type="number"] {
+    select, input[type="number"], button {
       font-size: 0.9em;
-      color: #e0e0e0;
-    }
-    select, input[type="number"] {
-      background: #333;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 5px;
       padding: 5px;
+      margin: 5px 0;
       width: 100%;
-      margin-bottom: 10px;
+      box-sizing: border-box;
+      border-radius: 5px;
+    }
+    select, input {
+      background-color: #2c2c2c;
+      color: white;
+      border: 1px solid #444;
     }
     button {
-      width: 100%;
-      background: #4da6ff;
+      background-color: #4da6ff;
       color: white;
       border: none;
-      border-radius: 5px;
-      padding: 10px;
       cursor: pointer;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
     }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>💹 Текущие цены</h2>
-    <p><strong>SOLUSDT:</strong> <span id="sol">—</span></p>
-    <p><strong>ETHUSDT:</strong> <span id="eth">—</span></p>
-    <p><strong>XRPUSDT:</strong> <span id="xrp">—</span></p>
-    <p><strong>BNBUSDT:</strong> <span id="bnb">—</span></p>
-    <p><strong>BTCUSDT:</strong> <span id="btc">—</span></p>
+    <div id="price-list"></div>
     <p><strong>Индекс:</strong> <span id="index">—</span></p>
     <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
   </div>
 
   <div class="panel">
     <h2>⚙️ Админ панель</h2>
-    <label for="formula">Формула:</label>
-    <select id="formula">
-      <option value="avg">(A + B + ...)/N</option>
-      <option value="div">(A + B)/C</option>
-      <option value="scaled">((A + B)/C)*K</option>
+    <label>Выберите валюты для расчёта:</label>
+    <select id="included" multiple>
+      <option value="ETHUSDT" selected>ETHUSDT</option>
+      <option value="SOLUSDT" selected>SOLUSDT</option>
+      <option value="XRPUSDT" selected>XRPUSDT</option>
+      <option value="BNBUSDT">BNBUSDT</option>
+      <option value="BTCUSDT">BTCUSDT</option>
     </select>
-    <label for="scale">Множитель (K):</label>
-    <input type="number" id="scale" value="1000" step="1">
+
+    <label>Делить на валюту (опционально):</label>
+    <select id="divider">
+      <option value="">—</option>
+      <option value="BTCUSDT">BTCUSDT</option>
+      <option value="ETHUSDT">ETHUSDT</option>
+    </select>
+
+    <label>Множитель:</label>
+    <input type="number" id="scale" value="1" step="1">
+
     <button onclick="recalculateIndex()">🔄 Пересчитать индекс</button>
   </div>
 
@@ -90,58 +98,53 @@
     const prices = {};
     let lastIndex = null;
     let lastMessageTime = null;
-    const elements = {
-      SOLUSDT: document.getElementById("sol"),
-      ETHUSDT: document.getElementById("eth"),
-      XRPUSDT: document.getElementById("xrp"),
-      BNBUSDT: document.getElementById("bnb"),
-      BTCUSDT: document.getElementById("btc"),
-      index: document.getElementById("index"),
-      time: document.getElementById("time"),
-      ping: document.getElementById("ping")
-    };
 
-    function updateTextIfChanged(el, newText) {
-      if (el.textContent !== newText) el.textContent = newText;
-    }
+    const priceList = document.getElementById("price-list");
+    const indexEl = document.getElementById("index");
+    const timeEl = document.getElementById("time");
+    const pingEl = document.getElementById("ping");
 
-    function getTimeStringWithMs() {
+    function updateTime() {
       const now = new Date();
       return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
     }
 
+    function renderPrices() {
+      priceList.innerHTML = '';
+      Object.keys(prices).forEach(symbol => {
+        const val = prices[symbol];
+        const row = `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
+        priceList.innerHTML += row;
+      });
+    }
+
     function recalculateIndex() {
-      const formula = document.getElementById("formula").value;
+      const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+      const divider = document.getElementById("divider").value;
       const scale = parseFloat(document.getElementById("scale").value || 1);
 
-      if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BTCUSDT", "BNBUSDT"].every(s => prices[s])) {
-        let index = 0;
-        if (formula === "avg") {
-          index = (prices.ETHUSDT + prices.SOLUSDT + prices.XRPUSDT + prices.BNBUSDT) / 4;
-        } else if (formula === "div") {
-          index = (prices.ETHUSDT + prices.SOLUSDT) / prices.BTCUSDT;
-        } else if (formula === "scaled") {
-          index = ((prices.ETHUSDT + prices.SOLUSDT) / prices.BTCUSDT) * scale;
-        }
+      if (included.every(s => prices[s]) && (!divider || prices[divider])) {
+        let sum = included.reduce((acc, cur) => acc + prices[cur], 0);
+        let index = divider ? (sum / prices[divider]) : (sum / included.length);
+        index *= scale;
 
         const indexFixed = index.toFixed(4);
-        updateTextIfChanged(elements.index, indexFixed);
+        indexEl.textContent = indexFixed;
 
         if (lastIndex !== null) {
-          elements.index.classList.toggle("highlight-up", index > lastIndex);
-          elements.index.classList.toggle("highlight-down", index < lastIndex);
-          setTimeout(() => elements.index.classList.remove("highlight-up", "highlight-down"), 300);
+          indexEl.classList.toggle("highlight-up", index > lastIndex);
+          indexEl.classList.toggle("highlight-down", index < lastIndex);
+          setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
         }
         lastIndex = index;
       }
     }
 
     const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/bnbusdt@ticker/btcusdt@ticker");
-
     ws.onmessage = (event) => {
       const now = performance.now();
       if (lastMessageTime !== null) {
-        updateTextIfChanged(elements.ping, Math.round(now - lastMessageTime).toString());
+        pingEl.textContent = Math.round(now - lastMessageTime).toString();
       }
       lastMessageTime = now;
 
@@ -149,10 +152,10 @@
       const symbol = data.s;
       const price = parseFloat(data.c);
       prices[symbol] = price;
-      if (elements[symbol]) updateTextIfChanged(elements[symbol], price.toFixed(6));
 
+      renderPrices();
       recalculateIndex();
-      updateTextIfChanged(elements.time, getTimeStringWithMs());
+      timeEl.textContent = updateTime();
     };
   </script>
 </body>
