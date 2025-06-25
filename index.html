@@ -17,7 +17,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       max-width: 400px;
       margin: auto;
-      transition: background-color 0.3s ease;
     }
     h2 {
       margin-top: 0;
@@ -26,12 +25,12 @@
     .highlight-up {
       background-color: #003300;
       color: #00ff66;
-      transition: background-color 0.6s ease;
+      transition: background-color 0.3s ease;
     }
     .highlight-down {
       background-color: #330000;
       color: #ff4d4d;
-      transition: background-color 0.6s ease;
+      transition: background-color 0.3s ease;
     }
     #index {
       font-weight: bold;
@@ -52,9 +51,19 @@
   </div>
 
   <script>
-    let prices = {};
+    const prices = {};
     let lastIndex = null;
+
+    const solEl = document.getElementById("sol");
+    const ethEl = document.getElementById("eth");
     const indexEl = document.getElementById("index");
+    const timeEl = document.getElementById("time");
+
+    const updateTextIfChanged = (el, newText) => {
+      if (el.textContent !== newText) {
+        el.textContent = newText;
+      }
+    };
 
     const ws = new WebSocket("wss://fstream.binance.com/stream?streams=solusdt@miniTicker/ethusdt@miniTicker");
 
@@ -65,32 +74,27 @@
 
       prices[symbol] = price;
 
-      if (symbol === "SOLUSDT") document.getElementById("sol").textContent = price.toFixed(4);
-      if (symbol === "ETHUSDT") document.getElementById("eth").textContent = price.toFixed(4);
+      if (symbol === "SOLUSDT") updateTextIfChanged(solEl, price.toFixed(4));
+      if (symbol === "ETHUSDT") updateTextIfChanged(ethEl, price.toFixed(4));
 
       if (prices.SOLUSDT && prices.ETHUSDT) {
         const index = (prices.SOLUSDT + prices.ETHUSDT) / 2;
         const indexFixed = index.toFixed(4);
-        indexEl.textContent = indexFixed;
+        updateTextIfChanged(indexEl, indexFixed);
 
         if (lastIndex !== null) {
-          if (index > lastIndex) {
-            indexEl.classList.add("highlight-up");
-            indexEl.classList.remove("highlight-down");
-          } else if (index < lastIndex) {
-            indexEl.classList.add("highlight-down");
-            indexEl.classList.remove("highlight-up");
-          }
-        }
-        lastIndex = index;
+          indexEl.classList.toggle("highlight-up", index > lastIndex);
+          indexEl.classList.toggle("highlight-down", index < lastIndex);
 
-        // Удалить подсветку через 600мс
-        setTimeout(() => {
-          indexEl.classList.remove("highlight-up", "highlight-down");
-        }, 600);
+          setTimeout(() => {
+            indexEl.classList.remove("highlight-up", "highlight-down");
+          }, 300);
+        }
+
+        lastIndex = index;
       }
 
-      document.getElementById("time").textContent = new Date().toLocaleString();
+      updateTextIfChanged(timeEl, new Date().toLocaleTimeString());
     };
   </script>
 </body>
