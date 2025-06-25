@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Цены по USDT + Панель</title>
+  <link rel="icon" href="data:,">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -35,7 +36,6 @@
     button:hover { background-color: #3399ff; }
     label { margin-top: 10px; display: block; }
     .hidden { display: none; }
-
     .currency-options {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -49,7 +49,6 @@
     .currency-options input[type="checkbox"] {
       accent-color: #4da6ff; transform: scale(1.2);
     }
-
     .top20 table {
       width: 100%; border-collapse: collapse; font-size: 0.9em; margin-top: 10px;
     }
@@ -126,11 +125,20 @@
 
 <script>
   let prices = {}, lastIndex = null, lastMessageTime = null, socket = null;
+  let capData = {};
+
   const priceList = document.getElementById("price-list");
   const indexEl = document.getElementById("index");
+  const capIndexEl = document.getElementById("cap-index");
   const timeEl = document.getElementById("time");
   const pingEl = document.getElementById("ping");
-  const capIndexEl = document.getElementById("cap-index");
+
+  const ids = {
+    BTCUSDT: "bitcoin", ETHUSDT: "ethereum", USDTUSDT: "tether", BNBUSDT: "binancecoin",
+    SOLUSDT: "solana", XRPUSDT: "ripple", USDCUSDT: "usd-coin", ADAUSDT: "cardano",
+    AVAXUSDT: "avalanche-2", DOGEUSDT: "dogecoin", FDUSDUSDT: "first-digital-usd",
+    SEIUSDT: "sei-network", PEPEUSDT: "pepe", SUIUSDT: "sui"
+  };
 
   function updateTime() {
     const now = new Date();
@@ -200,8 +208,7 @@
     else if (formula === 'divide') index = sum / prices[divider];
     else if (formula === 'scaled') index = (sum / prices[divider]) * scale;
 
-    const indexFixed = index.toFixed(4);
-    indexEl.textContent = indexFixed;
+    indexEl.textContent = index.toFixed(4);
 
     if (lastIndex !== null) {
       indexEl.classList.toggle("highlight-up", index > lastIndex);
@@ -210,32 +217,6 @@
     }
     lastIndex = index;
   }
-
-  function loadTop20() {
-    fetch('https://api.binance.com/api/v3/ticker/24hr')
-      .then(r => r.json())
-      .then(data => {
-        const top = data.filter(t => t.symbol.endsWith('USDT'))
-                        .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
-                        .slice(0, 20);
-        const tbody = document.querySelector('#top20-table tbody');
-        tbody.innerHTML = '';
-        top.forEach(item => {
-          const row = document.createElement('tr');
-          row.innerHTML = `<td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>`;
-          tbody.appendChild(row);
-        });
-      });
-  }
-
-  // --- Индекс по капитализации ---
-  let capData = {};
-  const ids = {
-    BTCUSDT: "bitcoin", ETHUSDT: "ethereum", USDTUSDT: "tether", BNBUSDT: "binancecoin",
-    SOLUSDT: "solana", XRPUSDT: "ripple", USDCUSDT: "usd-coin", ADAUSDT: "cardano",
-    AVAXUSDT: "avalanche-2", DOGEUSDT: "dogecoin", FDUSDUSDT: "first-digital-usd",
-    SEIUSDT: "sei-network", PEPEUSDT: "pepe", SUIUSDT: "sui"
-  };
 
   async function fetchCapData() {
     const symbols = getSelectedValues();
@@ -260,24 +241,37 @@
   function recalculateCapIndex() {
     const symbols = getSelectedValues();
     if (!symbols.every(s => prices[s] && capData[s])) return;
-
-    const marketCaps = symbols.map(s => prices[s] * capData[s].supply);
-    const totalCap = marketCaps.reduce((a, b) => a + b, 0);
+    const totalCap = symbols.reduce((sum, s) => sum + (prices[s] * capData[s].supply), 0);
     let index = 0;
     symbols.forEach(s => {
-      const price = prices[s];
-      const supply = capData[s].supply;
-      const weight = (price * supply) / totalCap;
-      index += price * weight;
+      const weight = (prices[s] * capData[s].supply) / totalCap;
+      index += prices[s] * weight;
     });
     capIndexEl.textContent = index.toFixed(4);
   }
 
-  const oldRefresh = refreshPrices;
-  refreshPrices = function () {
-    oldRefresh();
+  function refreshPrices() {
+    const included = getSelectedValues();
+    subscribeToPrices(included);
     fetchCapData();
-  };
+  }
+
+  function loadTop20() {
+    fetch('https://api.binance.com/api/v3/ticker/24hr')
+      .then(r => r.json())
+      .then(data => {
+        const top = data.filter(t => t.symbol.endsWith('USDT'))
+                        .sort((a, b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+                        .slice(0, 20);
+        const tbody = document.querySelector('#top20-table tbody');
+        tbody.innerHTML = '';
+        top.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>`;
+          tbody.appendChild(row);
+        });
+      });
+  }
 
   window.onload = () => {
     updateFormulaUI();
