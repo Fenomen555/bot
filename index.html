@@ -107,9 +107,8 @@
         const index = (
           prices.ETHUSDT +
           prices.SOLUSDT +
-          prices.XRPUSDT +
-          prices.BTCUSDT
-        ) / 4;
+          prices.XRPUSDT 
+        ) / prices.BTCUSDT;
 
         const indexFixed = index.toFixed(4);
         updateTextIfChanged(elements.index, indexFixed);
