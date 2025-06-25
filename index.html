@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Цены TOP-3 USDT</title>
+  <title>Цены TOP-4 USDT</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,6 +39,11 @@
       font-size: 0.85em;
       color: #999;
     }
+    a {
+      color: #4da6ff;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
@@ -47,6 +52,7 @@
     <p><strong>SOLUSDT:</strong> <span id="sol">—</span></p>
     <p><strong>ETHUSDT:</strong> <span id="eth">—</span></p>
     <p><strong>XRPUSDT:</strong> <span id="xrp">—</span></p>
+    <p><strong>BTCUSDT:</strong> <span id="btc">—</span> <a href="https://www.binance.com/ru-UA/trade/BTC_USDT?type=spot" target="_blank">→ Binance</a></p>
     <p><strong>Индекс:</strong> <span id="index">—</span></p>
     <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
   </div>
@@ -60,6 +66,7 @@
       SOLUSDT: document.getElementById("sol"),
       ETHUSDT: document.getElementById("eth"),
       XRPUSDT: document.getElementById("xrp"),
+      BTCUSDT: document.getElementById("btc"),
       index: document.getElementById("index"),
       time: document.getElementById("time"),
       ping: document.getElementById("ping")
@@ -71,7 +78,12 @@
       }
     };
 
-    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker");
+    const getTimeStringWithMs = () => {
+      const now = new Date();
+      return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+    };
+
+    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/btcusdt@ticker");
 
     ws.onmessage = (event) => {
       const now = performance.now();
@@ -91,12 +103,13 @@
         updateTextIfChanged(elements[symbol], price.toFixed(4));
       }
 
-      if (["ETHUSDT", "SOLUSDT", "XRPUSDT"].every(s => prices[s])) {
+      if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BTCUSDT"].every(s => prices[s])) {
         const index = (
           prices.ETHUSDT +
           prices.SOLUSDT +
-          prices.XRPUSDT
-        ) / 3;
+          prices.XRPUSDT +
+          prices.BTCUSDT
+        ) / 4;
 
         const indexFixed = index.toFixed(4);
         updateTextIfChanged(elements.index, indexFixed);
@@ -113,7 +126,7 @@
         lastIndex = index;
       }
 
-      updateTextIfChanged(elements.time, new Date().toLocaleTimeString());
+      updateTextIfChanged(elements.time, getTimeStringWithMs());
     };
   </script>
 </body>
