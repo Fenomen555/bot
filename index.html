@@ -79,29 +79,31 @@
     <h2>⚙️ Админ панель</h2>
     <label>Выберите валюты:</label>
     <select id="included" multiple>
-      <option value="ETHUSDT" selected>ETHUSDT</option>
-      <option value="SOLUSDT" selected>SOLUSDT</option>
-      <option value="XRPUSDT" selected>XRPUSDT</option>
+      <option value="ETHUSDT">ETHUSDT</option>
+      <option value="SOLUSDT">SOLUSDT</option>
+      <option value="XRPUSDT">XRPUSDT</option>
       <option value="BNBUSDT">BNBUSDT</option>
       <option value="BTCUSDT">BTCUSDT</option>
     </select>
 
     <label>Формула:</label>
     <select id="formula" onchange="updateFormulaUI()">
-     <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
-  <strong>Пояснения:</strong><br>
-  <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
-  <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
-  <strong>(A+B)/C * K</strong> — как выше, но результат умножается на коэффициент K.
-      </p> 
       <option value="average">(A+B)/N</option>
       <option value="divide">(A+B)/C</option>
       <option value="scaled">(A+B)/C * K</option>
     </select>
 
+    <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
+      <strong>Пояснения:</strong><br>
+      <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
+      <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
+      <strong>(A+B)/C × K</strong> — как выше, но результат умножается на коэффициент K.
+    </p>
+
     <div id="divider-block" class="hidden">
       <label>Делить на валюту:</label>
       <select id="divider">
+        <option value="">—</option>
         <option value="BTCUSDT">BTCUSDT</option>
         <option value="ETHUSDT">ETHUSDT</option>
         <option value="SOLUSDT">SOLUSDT</option>
@@ -112,7 +114,7 @@
 
     <div id="scale-block" class="hidden">
       <label>Множитель:</label>
-      <input type="number" id="scale" value="1000" step="1">
+      <input type="number" id="scale" value="1" step="1">
     </div>
 
     <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
@@ -123,8 +125,6 @@
     let lastIndex = null;
     let lastMessageTime = null;
     let socket = null;
-
-    const allSymbols = ["ETHUSDT", "SOLUSDT", "XRPUSDT", "BNBUSDT", "BTCUSDT"];
 
     const priceList = document.getElementById("price-list");
     const indexEl = document.getElementById("index");
@@ -137,8 +137,10 @@
     }
 
     function renderPrices(activeSymbols) {
+      const divider = document.getElementById("divider").value;
+      const all = [...new Set([...activeSymbols, divider])].filter(Boolean);
       priceList.innerHTML = '';
-      activeSymbols.forEach(symbol => {
+      all.forEach(symbol => {
         const val = prices[symbol];
         if (val !== undefined) {
           priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
@@ -155,7 +157,9 @@
     function subscribeToPrices(symbols) {
       if (socket) socket.close();
       prices = {};
-      const streams = symbols.map(s => s.toLowerCase() + "@ticker").join("/");
+      const divider = document.getElementById("divider").value;
+      const all = [...new Set([...symbols, divider])].filter(Boolean);
+      const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
       socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 
       socket.onmessage = (event) => {
@@ -191,6 +195,7 @@
 
       const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
       let index = 0;
+
       if (formula === 'average') {
         index = sum / included.length;
       } else if (formula === 'divide') {
@@ -207,12 +212,13 @@
         indexEl.classList.toggle("highlight-down", index < lastIndex);
         setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
       }
+
       lastIndex = index;
     }
 
     function refreshPrices() {
       const included = getSelectedValues("included");
-      subscribeToPrices([...new Set([...included, document.getElementById("divider").value])]);
+      subscribeToPrices(included);
     }
 
     window.onload = () => {
