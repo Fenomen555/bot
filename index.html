@@ -117,7 +117,6 @@
       <label><input type="checkbox" value="UNIUSDT"> UNIUSDT</label>
       <label><input type="checkbox" value="SYRUPUSDT"> SYRUPUSDT</label>
       <label><input type="checkbox" value="APTUSDT"> APTUSDT</label>
-      <label><input type="checkbox" value="BANANAS31USDT"> BANANAS31USDT</label>
       <label><input type="checkbox" value="TRXUSDT"> TRXUSDT</label>
       <label><input type="checkbox" value="ADAUSDT"> ADAUSDT</label>
       <label><input type="checkbox" value="BCHUSDT"> BCHUSDT</label>
@@ -157,7 +156,6 @@
         <option value="UNIUSDT">UNIUSDT</option>
         <option value="SYRUPUSDT">SYRUPUSDT</option>
         <option value="APTUSDT">APTUSDT</option>
-        <option value="BANANAS31USDT">BANANAS31USDT</option>
         <option value="TRXUSDT">TRXUSDT</option>
         <option value="ADAUSDT">ADAUSDT</option>
         <option value="BCHUSDT">BCHUSDT</option>
@@ -186,12 +184,12 @@
 
     function updateTime() {
       const now = new Date();
-      return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+      return ${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')};
     }
 
     function getSelectedValues() {
       return Array.from(document.querySelectorAll('#included input[type="checkbox"]:checked'))
-        .map(cb => cb.value);
+                  .map(cb => cb.value);
     }
 
     function renderPrices(activeSymbols) {
@@ -201,7 +199,7 @@
       all.forEach(symbol => {
         const val = prices[symbol];
         if (val !== undefined) {
-          priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
+          priceList.innerHTML += <p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>;
         }
       });
     }
@@ -218,7 +216,7 @@
       const divider = document.getElementById("divider").value;
       const all = [...new Set([...symbols, divider])].filter(Boolean);
       const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
-      socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+      socket = new WebSocket(wss://stream.binance.com:9443/stream?streams=${streams});
 
       socket.onmessage = (event) => {
         const now = performance.now();
@@ -258,7 +256,7 @@
         index = (sum / prices[divider]) * scale;
       }
 
-      const indexFixed = index.toFixed(6);
+      const indexFixed = index.toFixed(4);
       indexEl.textContent = indexFixed;
 
       if (lastIndex !== null) {
@@ -278,7 +276,7 @@
     window.onload = () => {
       updateFormulaUI();
       refreshPrices();
-    };
+    }
   </script>
 </body>
 </html>
