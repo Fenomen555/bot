@@ -30,7 +30,7 @@
       background-color: #330000;
       color: #ff4d4d;
     }
-    #index {
+    #index, #cap-index {
       font-weight: bold;
     }
     small {
@@ -114,62 +114,27 @@
     <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
   </div>
 
+  <div id="cap-index-block" class="card">
+    <h2>📊 Индекс по капитализации</h2>
+    <p><strong>Индекс:</strong> <span id="cap-index">—</span></p>
+    <p><small>💰 Капитализация монет загружается с CoinGecko</small></p>
+  </div>
+
   <div class="panel">
     <h2>⚙️ Админ панель</h2>
     <label>Выберите валюты:</label>
     <div id="included" class="currency-options">
+      <label><input type="checkbox" value="BTCUSDT" checked> BTCUSDT</label>
       <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
+      <label><input type="checkbox" value="USDTUSDT" checked> USDTUSDT</label>
+      <label><input type="checkbox" value="BNBUSDT" checked> BNBUSDT</label>
       <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
       <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
-      <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
-      <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
       <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
-      <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="XRPUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="PEPEUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="SUIUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="DOGEUSDT"> SEIUSDT</label>
-      <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
+      <label><input type="checkbox" value="ADAUSDT"> ADAUSDT</label>
+      <label><input type="checkbox" value="AVAXUSDT"> AVAXUSDT</label>
+      <label><input type="checkbox" value="DOGEUSDT"> DOGEUSDT</label>
     </div>
-
-    <label>Формула:</label>
-    <select id="formula" onchange="updateFormulaUI()">
-      <option value="average">(A+B)/N</option>
-      <option value="divide">(A+B)/C</option>
-      <option value="scaled">(A+B)/C * K</option>
-    </select>
-
-    <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
-      <strong>Пояснения:</strong><br>
-      <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
-      <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
-      <strong>(A+B)/C × K</strong> — как выше, но результат умножается на коэффициент K.
-    </p>
-
-    <div id="divider-block" class="hidden">
-      <label>Делить на валюту:</label>
-      <select id="divider">
-        <option value="">—</option>
-        <option value="BTCUSDT">BTCUSDT</option>
-        <option value="ETHUSDT">ETHUSDT</option>
-        <option value="SOLUSDT">SOLUSDT</option>
-        <option value="BNBUSDT">BNBUSDT</option>
-        <option value="FDUSDUSDT">FDUSDUSDT</option>
-        <option value="USDCUSDT">USDCUSDT</option>
-        <option value="SEIUSDT">SEIUSDT</option>
-        <option value="XRPUSDT">XRPUSDT</option>
-        <option value="PEPEUSDT">PEPEUSDT</option>
-        <option value="SUIUSDT">SUIUSDT</option>
-        <option value="DOGEUSDT">DOGEUSDT</option>
-        <option value="XRPUSDT">XRPUSDT</option>
-      </select>
-    </div>
-
-    <div id="scale-block" class="hidden">
-      <label>Множитель:</label>
-      <input type="number" id="scale" value="1" step="1">
-    </div>
-
     <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
   </div>
 
@@ -187,11 +152,26 @@
     let lastIndex = null;
     let lastMessageTime = null;
     let socket = null;
+    let capData = {};
 
     const priceList = document.getElementById("price-list");
     const indexEl = document.getElementById("index");
+    const capIndexEl = document.getElementById("cap-index");
     const timeEl = document.getElementById("time");
     const pingEl = document.getElementById("ping");
+
+    const ids = {
+      BTCUSDT: "bitcoin",
+      ETHUSDT: "ethereum",
+      USDTUSDT: "tether",
+      BNBUSDT: "binancecoin",
+      SOLUSDT: "solana",
+      XRPUSDT: "ripple",
+      USDCUSDT: "usd-coin",
+      ADAUSDT: "cardano",
+      AVAXUSDT: "avalanche-2",
+      DOGEUSDT: "dogecoin"
+    };
 
     function updateTime() {
       const now = new Date();
@@ -204,10 +184,8 @@
     }
 
     function renderPrices(activeSymbols) {
-      const divider = document.getElementById("divider").value;
-      const all = [...new Set([...activeSymbols, divider])].filter(Boolean);
       priceList.innerHTML = '';
-      all.forEach(symbol => {
+      activeSymbols.forEach(symbol => {
         const val = prices[symbol];
         if (val !== undefined) {
           priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
@@ -215,18 +193,10 @@
       });
     }
 
-    function updateFormulaUI() {
-      const formula = document.getElementById("formula").value;
-      document.getElementById("divider-block").classList.toggle("hidden", formula === 'average');
-      document.getElementById("scale-block").classList.toggle("hidden", formula !== 'scaled');
-    }
-
     function subscribeToPrices(symbols) {
       if (socket) socket.close();
       prices = {};
-      const divider = document.getElementById("divider").value;
-      const all = [...new Set([...symbols, divider])].filter(Boolean);
-      const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
+      const streams = symbols.map(s => s.toLowerCase() + "@ticker").join("/");
       socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 
       socket.onmessage = (event) => {
@@ -244,44 +214,61 @@
         const included = getSelectedValues();
         renderPrices(included);
         recalculateIndex();
+        recalculateCapIndex();
         timeEl.textContent = updateTime();
       };
     }
 
     function recalculateIndex() {
       const included = getSelectedValues();
-      const formula = document.getElementById("formula").value;
-      const divider = document.getElementById("divider").value;
-      const scale = parseFloat(document.getElementById("scale").value || 1);
-
-      if (!included.every(s => prices[s]) || (formula !== 'average' && (!divider || !prices[divider]))) return;
-
+      if (!included.every(s => prices[s])) return;
       const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
+      const index = (sum / included.length).toFixed(4);
+      indexEl.textContent = index;
+    }
+
+    async function fetchCapData() {
+      const symbols = getSelectedValues();
+      const idList = symbols.map(sym => ids[sym]).filter(Boolean).join(",");
+      if (!idList) return;
+      try {
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${idList}`);
+        const data = await res.json();
+        capData = {};
+        data.forEach(item => {
+          const key = Object.keys(ids).find(k => ids[k] === item.id);
+          if (key) {
+            capData[key] = {
+              market_cap: item.market_cap,
+              supply: item.circulating_supply
+            };
+          }
+        });
+        recalculateCapIndex();
+      } catch (e) {
+        console.error("Ошибка загрузки данных капитализации:", e);
+      }
+    }
+
+    function recalculateCapIndex() {
+      const symbols = getSelectedValues();
+      if (!symbols.every(s => prices[s] && capData[s])) return;
+      const marketCaps = symbols.map(s => prices[s] * capData[s].supply);
+      const totalCap = marketCaps.reduce((a, b) => a + b, 0);
       let index = 0;
-
-      if (formula === 'average') {
-        index = sum / included.length;
-      } else if (formula === 'divide') {
-        index = sum / prices[divider];
-      } else if (formula === 'scaled') {
-        index = (sum / prices[divider]) * scale;
-      }
-
-      const indexFixed = index.toFixed(4);
-      indexEl.textContent = indexFixed;
-
-      if (lastIndex !== null) {
-        indexEl.classList.toggle("highlight-up", index > lastIndex);
-        indexEl.classList.toggle("highlight-down", index < lastIndex);
-        setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
-      }
-
-      lastIndex = index;
+      symbols.forEach(s => {
+        const price = prices[s];
+        const supply = capData[s].supply;
+        const weight = (price * supply) / totalCap;
+        index += price * weight;
+      });
+      capIndexEl.textContent = index.toFixed(4);
     }
 
     function refreshPrices() {
       const included = getSelectedValues();
       subscribeToPrices(included);
+      fetchCapData();
     }
 
     function loadTop20() {
@@ -292,7 +279,6 @@
             .filter(t => t.symbol.endsWith('USDT'))
             .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
             .slice(0, 20);
-
           const tbody = document.querySelector('#top20-table tbody');
           tbody.innerHTML = '';
           top.forEach(item => {
@@ -304,7 +290,6 @@
     }
 
     window.onload = () => {
-      updateFormulaUI();
       refreshPrices();
       loadTop20();
     }
