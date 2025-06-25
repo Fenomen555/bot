@@ -65,6 +65,29 @@
       display: block;
     }
     .hidden { display: none; }
+
+    .currency-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .currency-options label {
+      background-color: #2c2c2c;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease;
+    }
+    .currency-options input[type="checkbox"] {
+      accent-color: #4da6ff;
+      transform: scale(1.2);
+    }
   </style>
 </head>
 <body>
@@ -78,13 +101,13 @@
   <div class="panel">
     <h2>⚙️ Админ панель</h2>
     <label>Выберите валюты:</label>
-    <select id="included" multiple>
-      <option value="ETHUSDT">ETHUSDT</option>
-      <option value="SOLUSDT">SOLUSDT</option>
-      <option value="XRPUSDT">XRPUSDT</option>
-      <option value="BNBUSDT">BNBUSDT</option>
-      <option value="BTCUSDT">BTCUSDT</option>
-    </select>
+    <div id="included" class="currency-options">
+      <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
+      <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
+      <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
+      <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
+      <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
+    </div>
 
     <label>Формула:</label>
     <select id="formula" onchange="updateFormulaUI()">
@@ -136,6 +159,11 @@
       return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
     }
 
+    function getSelectedValues() {
+      return Array.from(document.querySelectorAll('#included input[type="checkbox"]:checked'))
+                  .map(cb => cb.value);
+    }
+
     function renderPrices(activeSymbols) {
       const divider = document.getElementById("divider").value;
       const all = [...new Set([...activeSymbols, divider])].filter(Boolean);
@@ -174,19 +202,15 @@
         const price = parseFloat(data.c);
         prices[symbol] = price;
 
-        const included = getSelectedValues("included");
+        const included = getSelectedValues();
         renderPrices(included);
         recalculateIndex();
         timeEl.textContent = updateTime();
       };
     }
 
-    function getSelectedValues(id) {
-      return Array.from(document.getElementById(id).selectedOptions).map(opt => opt.value);
-    }
-
     function recalculateIndex() {
-      const included = getSelectedValues("included");
+      const included = getSelectedValues();
       const formula = document.getElementById("formula").value;
       const divider = document.getElementById("divider").value;
       const scale = parseFloat(document.getElementById("scale").value || 1);
@@ -217,7 +241,7 @@
     }
 
     function refreshPrices() {
-      const included = getSelectedValues("included");
+      const included = getSelectedValues();
       subscribeToPrices(included);
     }
 
