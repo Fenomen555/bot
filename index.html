@@ -10,7 +10,7 @@
       background-color: #121212;
       color: #e0e0e0;
     }
-    .card, .panel {
+    .card, .panel, .top20 {
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
@@ -88,9 +88,25 @@
       accent-color: #4da6ff;
       transform: scale(1.2);
     }
+
+    .top20 table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+    .top20 th, td {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+    .top20 th {
+      background: #2c2c2c;
+    }
   </style>
 </head>
 <body>
+
   <div class="card">
     <h2>💹 Текущие цены</h2>
     <div id="price-list"></div>
@@ -141,6 +157,15 @@
     </div>
 
     <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
+  </div>
+
+  <div class="top20">
+    <h2>📈 Топ-20 пар /USDT по объёму</h2>
+    <table id="top20-table">
+      <thead><tr><th>Пара</th><th>Объём (USDT)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="loadTop20()">🔁 Обновить топ‑20</button>
   </div>
 
   <script>
@@ -245,10 +270,31 @@
       subscribeToPrices(included);
     }
 
+    function loadTop20() {
+      fetch('https://api.binance.com/api/v3/ticker/24hr')
+        .then(r => r.json())
+        .then(data => {
+          const top = data
+            .filter(t => t.symbol.endsWith('USDT'))
+            .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+            .slice(0, 20);
+
+          const tbody = document.querySelector('#top20-table tbody');
+          tbody.innerHTML = '';
+          top.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>`;
+            tbody.appendChild(row);
+          });
+        });
+    }
+
     window.onload = () => {
       updateFormulaUI();
       refreshPrices();
+      loadTop20();
     }
   </script>
+
 </body>
 </html>
