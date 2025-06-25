@@ -49,12 +49,13 @@
     <p><strong>XRPUSDT:</strong> <span id="xrp">—</span></p>
     <p><strong>BNBUSDT:</strong> <span id="bnb">—</span></p>
     <p><strong>Индекс:</strong> <span id="index">—</span></p>
-    <p><small>🕒 Обновлено: <span id="time">—</span></small></p>
+    <p><small>🕒 Обновлено: <span id="time">—</span> | ⏱ Пинг: <span id="ping">—</span> мс</small></p>
   </div>
 
   <script>
     const prices = {};
     let lastIndex = null;
+    let lastMessageTime = null;
 
     const elements = {
       SOLUSDT: document.getElementById("sol"),
@@ -62,7 +63,8 @@
       XRPUSDT: document.getElementById("xrp"),
       BNBUSDT: document.getElementById("bnb"),
       index: document.getElementById("index"),
-      time: document.getElementById("time")
+      time: document.getElementById("time"),
+      ping: document.getElementById("ping")
     };
 
     const updateTextIfChanged = (el, newText) => {
@@ -74,6 +76,13 @@
     const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@miniTicker/solusdt@miniTicker/xrpusdt@miniTicker/bnbusdt@miniTicker");
 
     ws.onmessage = (event) => {
+      const now = performance.now();
+      if (lastMessageTime !== null) {
+        const ping = Math.round(now - lastMessageTime);
+        updateTextIfChanged(elements.ping, ping.toString());
+      }
+      lastMessageTime = now;
+
       const data = JSON.parse(event.data).data;
       const symbol = data.s;
       const price = parseFloat(data.c);
