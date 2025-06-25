@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Цены USDT + Панель</title>
+  <title>Цены по USDT + Панель</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -60,6 +60,7 @@
       margin-top: 10px;
       display: block;
     }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -72,32 +73,49 @@
 
   <div class="panel">
     <h2>⚙️ Админ панель</h2>
-    <label>Выберите валюты для расчёта:</label>
+    <label>Выберите валюты:</label>
     <select id="included" multiple>
-      <option value="ETHUSDT" selected>ETHUSDT</option>
-      <option value="SOLUSDT" selected>SOLUSDT</option>
-      <option value="XRPUSDT" selected>XRPUSDT</option>
+      <option value="ETHUSDT">ETHUSDT</option>
+      <option value="SOLUSDT">SOLUSDT</option>
+      <option value="XRPUSDT">XRPUSDT</option>
       <option value="BNBUSDT">BNBUSDT</option>
       <option value="BTCUSDT">BTCUSDT</option>
     </select>
 
-    <label>Делить на валюту (опционально):</label>
-    <select id="divider">
-      <option value="">—</option>
-      <option value="BTCUSDT">BTCUSDT</option>
-      <option value="ETHUSDT">ETHUSDT</option>
+    <label>Формула:</label>
+    <select id="formula" onchange="updateFormulaUI()">
+      <option value="average">(A+B)/N</option>
+      <option value="divide">(A+B)/C</option>
+      <option value="scaled">(A+B)/C * K</option>
     </select>
 
-    <label>Множитель:</label>
-    <input type="number" id="scale" value="1" step="1">
+    <div id="divider-block" class="hidden">
+      <label>Делить на валюту:</label>
+      <select id="divider">
+        <option value="">—</option>
+        <option value="BTCUSDT">BTCUSDT</option>
+        <option value="ETHUSDT">ETHUSDT</option>
+        <option value="SOLUSDT">SOLUSDT</option>
+        <option value="BNBUSDT">BNBUSDT</option>
+        <option value="XRPUSDT">XRPUSDT</option>
+      </select>
+    </div>
+
+    <div id="scale-block" class="hidden">
+      <label>Множитель:</label>
+      <input type="number" id="scale" value="1" step="1">
+    </div>
 
     <button onclick="recalculateIndex()">🔄 Пересчитать индекс</button>
   </div>
 
   <script>
-    const prices = {};
+    let prices = {};
     let lastIndex = null;
     let lastMessageTime = null;
+    let socket = null;
+
+    const allSymbols = ["ETHUSDT", "SOLUSDT", "XRPUSDT", "BNBUSDT", "BTCUSDT"];
 
     const priceList = document.getElementById("price-list");
     const indexEl = document.getElementById("index");
@@ -109,54 +127,86 @@
       return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
     }
 
-    function renderPrices() {
+    function renderPrices(activeSymbols) {
       priceList.innerHTML = '';
-      Object.keys(prices).forEach(symbol => {
+      activeSymbols.forEach(symbol => {
         const val = prices[symbol];
-        const row = `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
-        priceList.innerHTML += row;
+        if (val !== undefined) {
+          priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
+        }
       });
+    }
+
+    function updateFormulaUI() {
+      const formula = document.getElementById("formula").value;
+      document.getElementById("divider-block").classList.toggle("hidden", formula === 'average');
+      document.getElementById("scale-block").classList.toggle("hidden", formula !== 'scaled');
+    }
+
+    function subscribeToPrices(symbols) {
+      if (socket) socket.close();
+      prices = {};
+      const streams = symbols.map(s => s.toLowerCase() + "@ticker").join("/");
+      socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+      socket.onmessage = (event) => {
+        const now = performance.now();
+        if (lastMessageTime !== null) {
+          pingEl.textContent = Math.round(now - lastMessageTime).toString();
+        }
+        lastMessageTime = now;
+
+        const data = JSON.parse(event.data).data;
+        const symbol = data.s;
+        const price = parseFloat(data.c);
+        prices[symbol] = price;
+
+        const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+        renderPrices(included);
+        recalculateIndex();
+        timeEl.textContent = updateTime();
+      };
     }
 
     function recalculateIndex() {
       const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+      const formula = document.getElementById("formula").value;
       const divider = document.getElementById("divider").value;
       const scale = parseFloat(document.getElementById("scale").value || 1);
 
-      if (included.every(s => prices[s]) && (!divider || prices[divider])) {
-        let sum = included.reduce((acc, cur) => acc + prices[cur], 0);
-        let index = divider ? (sum / prices[divider]) : (sum / included.length);
-        index *= scale;
+      if (!included.every(s => prices[s]) || (formula !== 'average' && !prices[divider])) return;
 
-        const indexFixed = index.toFixed(4);
-        indexEl.textContent = indexFixed;
-
-        if (lastIndex !== null) {
-          indexEl.classList.toggle("highlight-up", index > lastIndex);
-          indexEl.classList.toggle("highlight-down", index < lastIndex);
-          setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
-        }
-        lastIndex = index;
+      const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
+      let index = 0;
+      if (formula === 'average') {
+        index = sum / included.length;
+      } else if (formula === 'divide') {
+        index = sum / prices[divider];
+      } else if (formula === 'scaled') {
+        index = (sum / prices[divider]) * scale;
       }
+
+      const indexFixed = index.toFixed(4);
+      indexEl.textContent = indexFixed;
+
+      if (lastIndex !== null) {
+        indexEl.classList.toggle("highlight-up", index > lastIndex);
+        indexEl.classList.toggle("highlight-down", index < lastIndex);
+        setTimeout(() => indexEl.classList.remove("highlight-up", "highlight-down"), 300);
+      }
+      lastIndex = index;
     }
 
-    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@ticker/solusdt@ticker/xrpusdt@ticker/bnbusdt@ticker/btcusdt@ticker");
-    ws.onmessage = (event) => {
-      const now = performance.now();
-      if (lastMessageTime !== null) {
-        pingEl.textContent = Math.round(now - lastMessageTime).toString();
-      }
-      lastMessageTime = now;
+    document.querySelector("button").addEventListener("click", () => {
+      const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+      subscribeToPrices(included);
+    });
 
-      const data = JSON.parse(event.data).data;
-      const symbol = data.s;
-      const price = parseFloat(data.c);
-      prices[symbol] = price;
-
-      renderPrices();
-      recalculateIndex();
-      timeEl.textContent = updateTime();
-    };
+    window.onload = () => {
+      updateFormulaUI();
+      const defaultIncluded = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+      subscribeToPrices(defaultIncluded);
+    }
   </script>
 </body>
 </html>
