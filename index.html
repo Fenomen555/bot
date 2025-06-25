@@ -10,7 +10,7 @@
       background-color: #121212;
       color: #e0e0e0;
     }
-    .card, .panel {
+    .card, .panel, .top20 {
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
@@ -88,9 +88,25 @@
       accent-color: #4da6ff;
       transform: scale(1.2);
     }
+
+    .top20 table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+    .top20 th, td {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+      text-align: left;
+    }
+    .top20 th {
+      background: #2c2c2c;
+    }
   </style>
 </head>
 <body>
+
   <div class="card">
     <h2>💹 Текущие цены</h2>
     <div id="price-list"></div>
@@ -102,25 +118,18 @@
     <h2>⚙️ Админ панель</h2>
     <label>Выберите валюты:</label>
     <div id="included" class="currency-options">
-      <label><input type="checkbox" value="BTCUSDT" checked> BTCUSDT</label>
       <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
-      <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
-      <label><input type="checkbox" value="SOLUSDT"> SOLUSDT</label>
-      <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
-      <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
       <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
-      <label><input type="checkbox" value="PEPEUSDT"> PEPEUSDT</label>
-      <label><input type="checkbox" value="SUIUSDT"> SUIUSDT</label>
-      <label><input type="checkbox" value="DOGEUSDT"> DOGEUSDT</label>
       <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
-      <label><input type="checkbox" value="NEWTUSDT"> NEWTUSDT</label>
-      <label><input type="checkbox" value="UNIUSDT"> UNIUSDT</label>
-      <label><input type="checkbox" value="SYRUPUSDT"> SYRUPUSDT</label>
-      <label><input type="checkbox" value="APTUSDT"> APTUSDT</label>
-      <label><input type="checkbox" value="TRXUSDT"> TRXUSDT</label>
-      <label><input type="checkbox" value="ADAUSDT"> ADAUSDT</label>
-      <label><input type="checkbox" value="BCHUSDT"> BCHUSDT</label>
-      <label><input type="checkbox" value="WIFUSDT"> WIFUSDT</label>
+      <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
+      <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
+      <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="XRPUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="PEPEUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="SUIUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="DOGEUSDT"> SEIUSDT</label>
+      <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
     </div>
 
     <label>Формула:</label>
@@ -143,23 +152,16 @@
         <option value="">—</option>
         <option value="BTCUSDT">BTCUSDT</option>
         <option value="ETHUSDT">ETHUSDT</option>
-        <option value="USDCUSDT">USDCUSDT</option>
         <option value="SOLUSDT">SOLUSDT</option>
+        <option value="BNBUSDT">BNBUSDT</option>
         <option value="FDUSDUSDT">FDUSDUSDT</option>
+        <option value="USDCUSDT">USDCUSDT</option>
         <option value="SEIUSDT">SEIUSDT</option>
         <option value="XRPUSDT">XRPUSDT</option>
         <option value="PEPEUSDT">PEPEUSDT</option>
         <option value="SUIUSDT">SUIUSDT</option>
         <option value="DOGEUSDT">DOGEUSDT</option>
-        <option value="BNBUSDT">BNBUSDT</option>
-        <option value="NEWTUSDT">NEWTUSDT</option>
-        <option value="UNIUSDT">UNIUSDT</option>
-        <option value="SYRUPUSDT">SYRUPUSDT</option>
-        <option value="APTUSDT">APTUSDT</option>
-        <option value="TRXUSDT">TRXUSDT</option>
-        <option value="ADAUSDT">ADAUSDT</option>
-        <option value="BCHUSDT">BCHUSDT</option>
-        <option value="WIFUSDT">WIFUSDT</option>
+        <option value="XRPUSDT">XRPUSDT</option>
       </select>
     </div>
 
@@ -169,6 +171,15 @@
     </div>
 
     <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
+  </div>
+
+  <div class="top20">
+    <h2>📈 Топ-20 пар /USDT по объёму</h2>
+    <table id="top20-table">
+      <thead><tr><th>Пара</th><th>Объём (USDT)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="loadTop20()">🔁 Обновить топ‑20</button>
   </div>
 
   <script>
@@ -184,7 +195,7 @@
 
     function updateTime() {
       const now = new Date();
-      return ${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')};
+      return `${now.toLocaleTimeString()}.${now.getMilliseconds().toString().padStart(3, '0')}`;
     }
 
     function getSelectedValues() {
@@ -199,7 +210,7 @@
       all.forEach(symbol => {
         const val = prices[symbol];
         if (val !== undefined) {
-          priceList.innerHTML += <p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>;
+          priceList.innerHTML += `<p><strong>${symbol}:</strong> ${val.toFixed(6)}</p>`;
         }
       });
     }
@@ -216,7 +227,7 @@
       const divider = document.getElementById("divider").value;
       const all = [...new Set([...symbols, divider])].filter(Boolean);
       const streams = all.map(s => s.toLowerCase() + "@ticker").join("/");
-      socket = new WebSocket(wss://stream.binance.com:9443/stream?streams=${streams});
+      socket = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 
       socket.onmessage = (event) => {
         const now = performance.now();
@@ -273,10 +284,31 @@
       subscribeToPrices(included);
     }
 
+    function loadTop20() {
+      fetch('https://api.binance.com/api/v3/ticker/24hr')
+        .then(r => r.json())
+        .then(data => {
+          const top = data
+            .filter(t => t.symbol.endsWith('USDT'))
+            .sort((a,b) => parseFloat(b.quoteVolume) - parseFloat(a.quoteVolume))
+            .slice(0, 20);
+
+          const tbody = document.querySelector('#top20-table tbody');
+          tbody.innerHTML = '';
+          top.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.symbol}</td><td>${parseFloat(item.quoteVolume).toLocaleString()}</td>`;
+            tbody.appendChild(row);
+          });
+        });
+    }
+
     window.onload = () => {
       updateFormulaUI();
       refreshPrices();
+      loadTop20();
     }
   </script>
+
 </body>
 </html>
