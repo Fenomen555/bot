@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Цены SOL и ETH</title>
+  <title>Цены TOP-4 USDT</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,6 +46,8 @@
     <h2>💹 Текущие цены</h2>
     <p><strong>SOLUSDT:</strong> <span id="sol">—</span></p>
     <p><strong>ETHUSDT:</strong> <span id="eth">—</span></p>
+    <p><strong>XRPUSDT:</strong> <span id="xrp">—</span></p>
+    <p><strong>BNBUSDT:</strong> <span id="bnb">—</span></p>
     <p><strong>Индекс:</strong> <span id="index">—</span></p>
     <p><small>🕒 Обновлено: <span id="time">—</span></small></p>
   </div>
@@ -54,10 +56,14 @@
     const prices = {};
     let lastIndex = null;
 
-    const solEl = document.getElementById("sol");
-    const ethEl = document.getElementById("eth");
-    const indexEl = document.getElementById("index");
-    const timeEl = document.getElementById("time");
+    const elements = {
+      SOLUSDT: document.getElementById("sol"),
+      ETHUSDT: document.getElementById("eth"),
+      XRPUSDT: document.getElementById("xrp"),
+      BNBUSDT: document.getElementById("bnb"),
+      index: document.getElementById("index"),
+      time: document.getElementById("time")
+    };
 
     const updateTextIfChanged = (el, newText) => {
       if (el.textContent !== newText) {
@@ -65,7 +71,7 @@
       }
     };
 
-    const ws = new WebSocket("wss://fstream.binance.com/stream?streams=solusdt@miniTicker/ethusdt@miniTicker");
+    const ws = new WebSocket("wss://fstream.binance.com/stream?streams=ethusdt@miniTicker/solusdt@miniTicker/xrpusdt@miniTicker/bnbusdt@miniTicker");
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data).data;
@@ -74,27 +80,34 @@
 
       prices[symbol] = price;
 
-      if (symbol === "SOLUSDT") updateTextIfChanged(solEl, price.toFixed(4));
-      if (symbol === "ETHUSDT") updateTextIfChanged(ethEl, price.toFixed(4));
+      if (elements[symbol]) {
+        updateTextIfChanged(elements[symbol], price.toFixed(4));
+      }
 
-      if (prices.SOLUSDT && prices.ETHUSDT) {
-        const index = (prices.SOLUSDT + prices.ETHUSDT) / 2;
+      if (["ETHUSDT", "SOLUSDT", "XRPUSDT", "BNBUSDT"].every(s => prices[s])) {
+        const index = (
+          prices.ETHUSDT +
+          prices.SOLUSDT +
+          prices.XRPUSDT +
+          prices.BNBUSDT
+        ) / 4;
+
         const indexFixed = index.toFixed(4);
-        updateTextIfChanged(indexEl, indexFixed);
+        updateTextIfChanged(elements.index, indexFixed);
 
         if (lastIndex !== null) {
-          indexEl.classList.toggle("highlight-up", index > lastIndex);
-          indexEl.classList.toggle("highlight-down", index < lastIndex);
+          elements.index.classList.toggle("highlight-up", index > lastIndex);
+          elements.index.classList.toggle("highlight-down", index < lastIndex);
 
           setTimeout(() => {
-            indexEl.classList.remove("highlight-up", "highlight-down");
+            elements.index.classList.remove("highlight-up", "highlight-down");
           }, 300);
         }
 
         lastIndex = index;
       }
 
-      updateTextIfChanged(timeEl, new Date().toLocaleTimeString());
+      updateTextIfChanged(elements.time, new Date().toLocaleTimeString());
     };
   </script>
 </body>
