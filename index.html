@@ -71,7 +71,7 @@
       }
     };
 
-    const ws = new WebSocket("wss://fstream.binance.com/stream?streams=ethusdt@miniTicker/solusdt@miniTicker/xrpusdt@miniTicker/bnbusdt@miniTicker");
+    const ws = new WebSocket("wss://stream.binance.com:9443/stream?streams=ethusdt@miniTicker/solusdt@miniTicker/xrpusdt@miniTicker/bnbusdt@miniTicker");
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data).data;
