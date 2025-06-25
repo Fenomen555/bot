@@ -55,6 +55,10 @@
       color: white;
       border: none;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #3399ff;
     }
     label {
       margin-top: 10px;
@@ -75,15 +79,21 @@
     <h2>⚙️ Админ панель</h2>
     <label>Выберите валюты:</label>
     <select id="included" multiple>
-      <option value="ETHUSDT">ETHUSDT</option>
-      <option value="SOLUSDT">SOLUSDT</option>
-      <option value="XRPUSDT">XRPUSDT</option>
+      <option value="ETHUSDT" selected>ETHUSDT</option>
+      <option value="SOLUSDT" selected>SOLUSDT</option>
+      <option value="XRPUSDT" selected>XRPUSDT</option>
       <option value="BNBUSDT">BNBUSDT</option>
       <option value="BTCUSDT">BTCUSDT</option>
     </select>
 
     <label>Формула:</label>
     <select id="formula" onchange="updateFormulaUI()">
+     <p style="font-size: 0.85em; color: #aaa; line-height: 1.5;">
+  <strong>Пояснения:</strong><br>
+  <strong>(A+B)/N</strong> — среднее значение выбранных валют.<br>
+  <strong>(A+B)/C</strong> — сумма выбранных валют делится на указанную валюту C.<br>
+  <strong>(A+B)/C * K</strong> — как выше, но результат умножается на коэффициент K.
+      </p> 
       <option value="average">(A+B)/N</option>
       <option value="divide">(A+B)/C</option>
       <option value="scaled">(A+B)/C * K</option>
@@ -92,7 +102,6 @@
     <div id="divider-block" class="hidden">
       <label>Делить на валюту:</label>
       <select id="divider">
-        <option value="">—</option>
         <option value="BTCUSDT">BTCUSDT</option>
         <option value="ETHUSDT">ETHUSDT</option>
         <option value="SOLUSDT">SOLUSDT</option>
@@ -103,10 +112,10 @@
 
     <div id="scale-block" class="hidden">
       <label>Множитель:</label>
-      <input type="number" id="scale" value="1" step="1">
+      <input type="number" id="scale" value="1000" step="1">
     </div>
 
-    <button onclick="recalculateIndex()">🔄 Пересчитать индекс</button>
+    <button onclick="refreshPrices()">🔄 Пересчитать индекс</button>
   </div>
 
   <script>
@@ -161,20 +170,24 @@
         const price = parseFloat(data.c);
         prices[symbol] = price;
 
-        const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+        const included = getSelectedValues("included");
         renderPrices(included);
         recalculateIndex();
         timeEl.textContent = updateTime();
       };
     }
 
+    function getSelectedValues(id) {
+      return Array.from(document.getElementById(id).selectedOptions).map(opt => opt.value);
+    }
+
     function recalculateIndex() {
-      const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
+      const included = getSelectedValues("included");
       const formula = document.getElementById("formula").value;
       const divider = document.getElementById("divider").value;
       const scale = parseFloat(document.getElementById("scale").value || 1);
 
-      if (!included.every(s => prices[s]) || (formula !== 'average' && !prices[divider])) return;
+      if (!included.every(s => prices[s]) || (formula !== 'average' && (!divider || !prices[divider]))) return;
 
       const sum = included.reduce((acc, cur) => acc + prices[cur], 0);
       let index = 0;
@@ -197,15 +210,14 @@
       lastIndex = index;
     }
 
-    document.querySelector("button").addEventListener("click", () => {
-      const included = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
-      subscribeToPrices(included);
-    });
+    function refreshPrices() {
+      const included = getSelectedValues("included");
+      subscribeToPrices([...new Set([...included, document.getElementById("divider").value])]);
+    }
 
     window.onload = () => {
       updateFormulaUI();
-      const defaultIncluded = Array.from(document.getElementById("included").selectedOptions).map(opt => opt.value);
-      subscribeToPrices(defaultIncluded);
+      refreshPrices();
     }
   </script>
 </body>
