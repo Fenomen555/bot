@@ -73,6 +73,8 @@
 <div class="cap-panel">
   <h2>🧮 Индекс по капитализации</h2>
   <p><strong>Значение:</strong> <span id="cap-index">—</span></p>
+  <div id="cap-debug" style="font-size: 0.8em; color: #aaa; line-height: 1.4; margin-top: 10px;"></div>
+
   <p>Этот индекс рассчитывается на основе:</p>
   <ul>
     <li>📉 Текущих цен с Binance (в реальном времени)</li>
@@ -256,18 +258,34 @@
     }
   }
 
-  function recalculateCapIndex() {
-    const symbols = getSelectedValues();
-    if (!symbols.every(s => prices[s] && capData[s])) return;
-    const totalCap = symbols.reduce((sum, s) => sum + (prices[s] * capData[s].supply), 0);
-    let index = 0;
-    symbols.forEach(s => {
-      const weight = (prices[s] * capData[s].supply) / totalCap;
-      index += prices[s] * weight;
-    });
-    capIndexEl.textContent = index.toFixed(4);
-  }
+function recalculateCapIndex() {
+  const symbols = getSelectedValues();
+  if (!symbols.every(s => prices[s] && capData[s])) return;
 
+  const debug = [];
+  const totalCap = symbols.reduce((sum, s) => sum + (prices[s] * capData[s].supply), 0);
+
+  let index = 0;
+
+  symbols.forEach(s => {
+    const price = prices[s];
+    const supply = capData[s].supply;
+    const mc = price * supply;
+    const weight = mc / totalCap;
+    const weighted = price * weight;
+
+    index += weighted;
+
+    debug.push(
+      `<strong>${s}</strong>: Цена = ${price.toFixed(2)}, Supply = ${supply.toLocaleString()} → ` +
+      `Капитализация = ${mc.toLocaleString(undefined, { maximumFractionDigits: 0 })}, ` +
+      `Вес = ${(weight * 100).toFixed(2)}%, Вклад = ${weighted.toFixed(4)}`
+    );
+  });
+
+  capIndexEl.textContent = index.toFixed(4);
+  document.getElementById("cap-debug").innerHTML = debug.join("<br>");
+}
   function refreshPrices() {
     const included = getSelectedValues();
     subscribeToPrices(included);
