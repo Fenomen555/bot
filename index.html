@@ -88,14 +88,13 @@
   <h2>⚙️ Админ панель</h2>
   <label>Выберите валюты:</label>
   <div id="included" class="currency-options">
+    <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label> 
     <label><input type="checkbox" value="ETHUSDT" checked> ETHUSDT</label>
-    <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
     <label><input type="checkbox" value="XRPUSDT"> XRPUSDT</label>
     <label><input type="checkbox" value="BNBUSDT"> BNBUSDT</label>
-    <label><input type="checkbox" value="FDUSDUSDT"> FDUSDUSDT</label>
-    <label><input type="checkbox" value="USDCUSDT"> USDCUSDT</label>
-    <label><input type="checkbox" value="SEIUSDT"> SEIUSDT</label>
-    <label><input type="checkbox" value="BTCUSDT"> BTCUSDT</label>
+    <label><input type="checkbox" value="SOLUSDT" checked> SOLUSDT</label>
+    <label><input type="checkbox" value="TRXUSDT"> TRXUSDT</label>
+    <label><input type="checkbox" value="DOGEUSDT"> DOGEUSDT</label>
   </div>
 
   <label>Формула:</label>
@@ -118,10 +117,14 @@
       <option value="">—</option>
       <option value="BTCUSDT">BTCUSDT</option>
       <option value="ETHUSDT">ETHUSDT</option>
+      <option value="XRPUSDT">XRPUSDT</option>
+      <option value="BNBUSDT">BNBUSDT</option>
       <option value="SOLUSDT">SOLUSDT</option>
+      <option value="TRXUSDT">TRXUSDT</option>
+      <option value="DOGEUSDT">DOGEUSDT</option>
     </select>
   </div>
-
+ 
   <div id="scale-block" class="hidden">
     <label>Множитель:</label>
     <input type="number" id="scale" value="1" step="1">
@@ -151,10 +154,8 @@
   const pingEl = document.getElementById("ping");
 
   const ids = {
-    BTCUSDT: "bitcoin", ETHUSDT: "ethereum", USDTUSDT: "tether", BNBUSDT: "binancecoin",
-    SOLUSDT: "solana", XRPUSDT: "ripple", USDCUSDT: "usd-coin", ADAUSDT: "cardano",
-    AVAXUSDT: "avalanche-2", DOGEUSDT: "dogecoin", FDUSDUSDT: "first-digital-usd",
-    SEIUSDT: "sei-network", PEPEUSDT: "pepe", SUIUSDT: "sui"
+    BTCUSDT: "bitcoin", ETHUSDT: "ethereum", BNBUSDT: "binancecoin",
+    SOLUSDT: "solana", XRPUSDT: "ripple", TRXUSDT: "tron", DOGEUSDT: "dogecoin"
   };
 
   function updateTime() {
